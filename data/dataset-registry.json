@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "generated_outputs_are_local_only_by_default": true,
+  "datasets": [
+    {
+      "name": "rlc-annotated",
+      "expected_local_archive_name": "rlc-annotated-main.zip",
+      "source_name": "RLC-GEC / rlc-annotated",
+      "source_url": "https://github.com/arozovskaya/rlc-annotated",
+      "license_usage_status": "Archive contains MIT license; full corpus is still not vendored by default.",
+      "importer_command": [
+        "python",
+        "scripts/import/rlc_annotated.py",
+        "--input",
+        "{input}",
+        "--output",
+        "{output}",
+        "--part",
+        "all"
+      ],
+      "normalized_output_path": "data/eval/gec/rlc-annotated.jsonl",
+      "recommended_benchmark_mode": "per-record",
+      "observed_external_record_count": 16512,
+      "fixture_record_count": 2,
+      "known_limitations": [
+        "Token-boundary edit spans are not aligned to checker character offsets yet.",
+        "Unchanged sentence pairs are skipped unless --keep-uncorrected is passed.",
+        "rlc_test.csv is grouped by unique source/correction pair to avoid duplicate examples."
+      ]
+    },
+    {
+      "name": "lorugec",
+      "expected_local_archive_name": "LORuGEC-main.zip",
+      "source_name": "LORuGEC",
+      "source_url": "https://github.com/ai-forever/LORuGEC",
+      "license_usage_status": "No explicit OSI-style license observed in the prior archive; keep raw/full normalized data local-only until terms are clear.",
+      "importer_command": [
+        "python",
+        "scripts/import/lorugec.py",
+        "--input",
+        "{input}",
+        "--output",
+        "{output}"
+      ],
+      "normalized_output_path": "data/eval/gec/lorugec.jsonl",
+      "recommended_benchmark_mode": "per-record",
+      "observed_external_record_count": 960,
+      "fixture_record_count": 2,
+      "known_limitations": [
+        "Workbook import preserves rule metadata but does not provide source spans.",
+        "M2 fallback preserves token spans but carries less rule metadata.",
+        "Prompt/Query split mapping is dataset-specific and should not be generalized."
+      ]
+    },
+    {
+      "name": "ruspellgold",
+      "expected_local_archive_name": "RuSpellGold.zip",
+      "source_name": "RuSpellGold",
+      "source_url": "https://huggingface.co/datasets/ai-forever/RuSpellGold",
+      "license_usage_status": "Dataset package declares Apache-2.0, but underlying source-text copyright caveats remain; do not vendor full dumps by default.",
+      "importer_command": [
+        "python",
+        "scripts/import/ruspellgold.py",
+        "--input",
+        "{input}",
+        "--output",
+        "{output}"
+      ],
+      "normalized_output_path": "data/eval/spelling/ruspellgold.jsonl",
+      "recommended_benchmark_mode": "per-record",
+      "observed_external_record_count": 1213,
+      "fixture_record_count": 1,
+      "known_limitations": [
+        "No detailed labels or edit spans are provided; importer assigns coarse spelling label.",
+        "Identical source/correction pairs are skipped unless --keep-identical is passed.",
+        "Domain shards duplicate the complete split and should not be combined with it."
+      ]
+    }
+  ]
+}

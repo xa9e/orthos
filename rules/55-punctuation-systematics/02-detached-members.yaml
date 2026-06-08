@@ -1,0 +1,149 @@
+version: 1
+rules:
+- id: ru.punctuation.detached_participle_after_head_noun
+  title: Обособление причастного оборота после определяемого слова
+  domain: punctuation
+  level: intermediate
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_punctuation
+  - russian_grammar_1980
+  detector:
+    kind: manual
+    note: Нужны границы причастного оборота, определяемое слово и согласование оборота с ним.
+  examples:
+    valid:
+    - Дом, построенный у реки, быстро заселили.
+    invalid:
+    - Дом построенный у реки быстро заселили.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  rule_family: syntax_dependent
+  tags:
+  - participle
+  - detached-member
+- id: ru.punctuation.non_detached_participle_before_head_noun
+  title: Причастный оборот перед определяемым словом обычно не обособляется
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - gramota_punctuation
+  detector:
+    kind: manual
+    note: Нужны условия причинного/уступительного оттенка, местоименное определяемое слово и распространённость оборота.
+  examples:
+    valid:
+    - Построенный у реки дом быстро заселили.
+    invalid:
+    - Построенный у реки, дом быстро заселили.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  rule_family: syntax_dependent
+  tags:
+  - participle
+  - exception
+- id: ru.punctuation.deeprichastie_turnover_commas
+  title: Обособление деепричастного оборота
+  domain: punctuation
+  level: intermediate
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_punctuation
+  detector:
+    kind: manual
+    note: Нужны границы деепричастного оборота и список фразеологизированных исключений.
+  examples:
+    valid:
+    - Он вошёл, не снимая пальто.
+    invalid:
+    - Он вошёл не снимая пальто.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  rule_family: syntax_dependent
+  tags:
+  - adverbial-participle
+  - comma
+- id: ru.punctuation.comparative_turnover_with_kak
+  title: Сравнительный оборот с как
+  domain: punctuation
+  level: expert
+  status: research
+  severity: warning
+  source_refs:
+  - gramota_punctuation
+  detector:
+    kind: manual
+    note: Нужна семантика сравнения против значения в качестве, фразеологизмы и составные союзы.
+  examples:
+    valid:
+    - Он молчал, как рыба.
+    invalid:
+    - Он молчал как рыба.
+  requires:
+  - tokenization
+  - syntax
+  - semantics
+  rule_family: syntax_dependent
+  tags:
+  - comparative
+  - comma
+- id: ru.punctuation.apposition_detachment
+  title: Обособление приложений
+  domain: punctuation
+  level: expert
+  status: research
+  severity: warning
+  source_refs:
+  - gramota_punctuation
+  - russian_grammar_1980
+  detector:
+    kind: manual
+    note: Нужны named entities, родо-видовые отношения, место приложения и интонационная самостоятельность.
+  examples:
+    valid:
+    - Иван Петров, инженер, выступил первым.
+    invalid:
+    - Иван Петров инженер выступил первым.
+  requires:
+  - tokenization
+  - syntax
+  - named_entities
+  - semantics
+  rule_family: syntax_dependent
+  tags:
+  - apposition
+  - comma
+- id: ru.punctuation.clarifying_member_detachment
+  title: Обособление уточняющих членов предложения
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - gramota_punctuation
+  detector:
+    kind: manual
+    note: Требуется различать уточнение, пояснение и обычную обстоятельственную группу.
+  examples:
+    valid:
+    - Завтра, в шесть утра, поезд уйдёт.
+    invalid:
+    - Завтра в шесть утра поезд уйдёт.
+  requires:
+  - tokenization
+  - syntax
+  - semantics
+  rule_family: syntax_dependent
+  tags:
+  - clarification
+  - detached-member

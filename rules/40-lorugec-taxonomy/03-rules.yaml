@@ -1,0 +1,193 @@
+version: 1
+source_refs: []
+rules:
+- id: ru.orthography.sibilant_suffix_ending_o_e
+  title: О/Е после шипящих и Ц в суффиксах и окончаниях
+  domain: orthography
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  explanation: Отличать корень, суффикс и окончание при выборе гласной после шипящих и ц.
+  requires:
+  - morphology
+  - word_formation
+  - stress
+  - lexicon
+  tags:
+  - lorugec
+  - spelling
+  - word-formation
+  detector:
+    kind: manual
+    note: Нужны часть речи, морфемная позиция, ударение и парадигма слова.
+  examples:
+    valid:
+    - Свечой осветили комнату.
+    invalid:
+    - Свечей осветили комнату.
+- id: ru.orthography.vowels_after_ts
+  title: Гласные И/Ы, О/Е после Ц
+  domain: orthography
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  explanation: Проверять гласные после ц в корне, суффиксе и окончании с учётом исключений.
+  requires:
+  - morphology
+  - word_formation
+  - stress
+  - lexicon
+  tags:
+  - lorugec
+  - spelling
+  - word-formation
+  detector:
+    kind: manual
+    note: Нужны морфемика, ударение и список исключений вроде цыган/цыплёнок.
+  examples:
+    valid:
+    - На улице цыган играл на гитаре.
+    invalid:
+    - На улице циган играл на гитаре.
+- id: ru.orthography.nn_adjectives_full
+  title: Н/НН в суффиксах прилагательных
+  domain: orthography
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  - rozental_online
+  explanation: Определить одну или две н в прилагательных по суффиксу, производящей основе и исключениям.
+  requires:
+  - morphology
+  - word_formation
+  - lexicon
+  tags:
+  - lorugec
+  - spelling
+  - word-formation
+  detector:
+    kind: manual
+    note: 'Нужна словообразовательная модель: -онн-/-енн-, стык основы на н, -ан-/-ян-/-ин- и исключения.'
+  examples:
+    valid:
+    - Стеклянная дверь.
+    invalid:
+    - Стекляная дверь.
+- id: ru.orthography.nn_participles_full
+  title: Н/НН в причастиях и отглагольных прилагательных
+  domain: orthography
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  explanation: Различать причастие и отглагольное прилагательное, учитывать приставки, вид и зависимые слова.
+  requires:
+  - morphology
+  - syntax
+  - word_formation
+  - lexicon
+  tags:
+  - lorugec
+  - spelling
+  - word-formation
+  detector:
+    kind: manual
+    note: Нужны вид глагола, зависимые слова, краткая форма, суффиксы и исключения.
+  examples:
+    valid:
+    - Покрашенный забор высох.
+    invalid:
+    - Покрашеный забор высох.
+- id: ru.orthography.participle_suffix_vowels
+  title: Гласные в суффиксах причастий
+  domain: orthography
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  - rozental_online
+  explanation: Выбор суффиксов действительных/страдательных причастий зависит от спряжения и основы глагола.
+  requires:
+  - morphology
+  - word_formation
+  - lexicon
+  tags:
+  - lorugec
+  - spelling
+  - word-formation
+  detector:
+    kind: manual
+    note: Нужны глагольная лемма, спряжение, переходность, вид и парадигма образования причастий.
+  examples:
+    valid:
+    - Колышущийся занавес.
+    invalid:
+    - Колышащийся занавес.
+- id: ru.orthography.diminutive_enk_onk
+  title: Суффиксы -еньк- / -оньк- в существительных
+  domain: orthography
+  level: advanced
+  status: research
+  severity: info
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  - orthographia_ru
+  explanation: Проверять уменьшительные суффиксы по твёрдости/мягкости основы и исключениям.
+  requires:
+  - morphology
+  - word_formation
+  - stress
+  - lexicon
+  tags:
+  - lorugec
+  - spelling
+  - word-formation
+  detector:
+    kind: manual
+    note: Нужны основа, фонетическая характеристика согласного, ударение и словарь исключений.
+  examples:
+    valid:
+    - Берёзонька росла у дома.
+    invalid:
+    - Берёзенька росла у дома.
+- id: ru.orthography.suffix_ek_ik
+  title: Суффиксы -ек- / -ик- с беглой гласной
+  domain: orthography
+  level: advanced
+  status: research
+  severity: info
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  - orthographia_ru
+  explanation: Различать -ек- и -ик- по сохранению гласной при склонении.
+  requires:
+  - morphology
+  - word_formation
+  - lexicon
+  tags:
+  - lorugec
+  - spelling
+  - word-formation
+  detector:
+    kind: manual
+    note: Нужна парадигма склонения и словообразовательный разбор; единичная форма недостаточна.
+  examples:
+    valid:
+    - Ключик лежит на столе.
+    invalid:
+    - Ключек лежит на столе.

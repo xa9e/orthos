@@ -1,0 +1,3 @@
+text_orig,text_cor,quote,correction,tag
+"Кто то пришёл.","Кто-то пришёл.","Кто то","Кто-то",Hyphen+Ins
+"Кто то пришёл.","Кто-то пришёл."," ","-",Space+Del

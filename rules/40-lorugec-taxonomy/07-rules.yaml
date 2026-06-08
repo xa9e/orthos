@@ -1,0 +1,184 @@
+version: 1
+source_refs: []
+rules:
+- id: ru.punctuation.dash_asyndetic_complex
+  title: Тире в бессоюзном сложном предложении
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_punctuation
+  - gramota_lopatin_full
+  explanation: В БСП тире может маркировать следствие, условие, время, противопоставление или резкую смену событий.
+  requires:
+  - tokenization
+  - syntax
+  - semantics
+  tags:
+  - lorugec
+  - punctuation
+  - syntax-heavy
+  detector:
+    kind: manual
+    note: Нужны clause segmentation и семантика отношений между частями; это не задача пунктуационной косметики.
+  examples:
+    valid:
+    - Солнце село — стало холодно.
+    invalid:
+    - Солнце село, стало холодно.
+- id: ru.punctuation.dash_apposition
+  title: Тире при приложении
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_punctuation
+  - orthographia_ru
+  explanation: Приложение может выделяться тире при пояснении, распространённости, позиции в конце и повторе слова.
+  requires:
+  - morphology
+  - syntax
+  - semantics
+  tags:
+  - lorugec
+  - punctuation
+  - syntax-heavy
+  detector:
+    kind: manual
+    note: Нужны apposition detection, границы приложения и тип пояснительной связи.
+  examples:
+    valid:
+    - К нам подошёл сосед — старый моряк.
+    invalid:
+    - К нам подошёл сосед, старый моряк.
+- id: ru.grammar.case_government_lorugec
+  title: 'Нормы управления: глаголы, предлоги и именные конструкции'
+  domain: grammar
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - ruscorpora_morph
+  - ruscorpora_syntax
+  explanation: Проверять падеж и предлог зависимого слова у управляющей лексемы.
+  requires:
+  - morphology
+  - syntax
+  - lexicon
+  tags:
+  - lorugec
+  - grammar
+  detector:
+    kind: manual
+    note: Нужен словарь управления head lemma -> complements, морфология падежа и синтаксическая связь.
+  examples:
+    valid:
+    - Согласно приказу, срок изменили.
+    invalid:
+    - Согласно приказа, срок изменили.
+- id: ru.grammar.quantitative_numeral_declension
+  title: Склонение количественных числительных
+  domain: grammar
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - ruscorpora_morph
+  explanation: Составные числительные изменяются по нескольким внутренним компонентам, а не только по последнему слову.
+  requires:
+  - morphology
+  - syntax
+  - lexicon
+  tags:
+  - lorugec
+  - grammar
+  detector:
+    kind: manual
+    note: Нужна модель числительных, падеж контекста, составные формы и словарь нерегулярных парадигм.
+  examples:
+    valid:
+    - К ста двадцати пяти участникам добавили ещё двоих.
+    invalid:
+    - К сто двадцать пять участникам добавили ещё двоих.
+- id: ru.grammar.poltora_declension
+  title: 'Полтора, полторы, полтораста: род и падеж'
+  domain: grammar
+  level: school
+  status: planned
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - ruscorpora_morph
+  explanation: Формы полтора/полторы выбираются по роду существительного, а косвенные падежи имеют особые формы.
+  requires:
+  - morphology
+  - syntax
+  - lexicon
+  tags:
+  - lorugec
+  - grammar
+  detector:
+    kind: manual
+    note: Нужны род и падеж существительного, количественная группа и словарь числительных.
+  examples:
+    valid:
+    - Полторы недели прошли быстро.
+    invalid:
+    - Полтора недели прошли быстро.
+- id: ru.grammar.participle_agreement_lorugec
+  title: Согласование причастия с определяемым словом
+  domain: grammar
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  - ruscorpora_morph
+  explanation: Причастие должно согласоваться с определяемым словом в роде, числе и падеже.
+  requires:
+  - morphology
+  - syntax
+  tags:
+  - lorugec
+  - grammar
+  detector:
+    kind: manual
+    note: Нужны dependency-связь, полная морфология причастия и существительного, а также обработка омонимии.
+  examples:
+    valid:
+    - Письмо, написанное утром, отправили сразу.
+    invalid:
+    - Письмо, написанный утром, отправили сразу.
+- id: ru.style.lexical_collocation
+  title: Лексическая сочетаемость слов
+  domain: style
+  level: advanced
+  status: research
+  severity: info
+  source_refs:
+  - lorugec_dataset
+  - editorial_style_general
+  explanation: Сочетаемость — не бинарная школьная орфограмма, а словарно-корпусное ограничение.
+  requires:
+  - lexicon
+  - semantics
+  - benchmark
+  tags:
+  - lorugec
+  - style
+  - semantics
+  detector:
+    kind: manual
+    note: Нужен словарь сочетаемости, корпусные частоты и evaluation set; rule-only без ранжирования будет шуметь.
+  examples:
+    valid:
+    - Оказать помощь пациенту.
+    invalid:
+    - Сделать помощь пациенту.

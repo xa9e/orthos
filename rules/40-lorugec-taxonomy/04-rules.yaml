@@ -1,0 +1,192 @@
+version: 1
+source_refs: []
+rules:
+- id: ru.orthography.suffix_its_ets_neuter
+  title: Суффиксы -иц- / -ец- в существительных среднего рода
+  domain: orthography
+  level: advanced
+  status: research
+  severity: info
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  - orthographia_ru
+  explanation: Выбор -иц-/-ец- в среднем роде зависит от места ударения.
+  requires:
+  - morphology
+  - word_formation
+  - stress
+  - lexicon
+  tags:
+  - lorugec
+  - spelling
+  - word-formation
+  detector:
+    kind: manual
+    note: Нужны род, ударение, суффиксальная позиция и словарь спорных слов.
+  examples:
+    valid:
+    - Платьице висело в шкафу.
+    invalid:
+    - Платьеце висело в шкафу.
+- id: ru.orthography.suffix_insk_ensk
+  title: Суффиксы -инск- / -енск- в прилагательных
+  domain: orthography
+  level: advanced
+  status: research
+  severity: info
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  - orthographia_ru
+  explanation: Проверять прилагательные от географических названий и имён по производящей основе.
+  requires:
+  - morphology
+  - word_formation
+  - lexicon
+  tags:
+  - lorugec
+  - spelling
+  - word-formation
+  detector:
+    kind: manual
+    note: Нужны named entities, топонимический словарь и словообразовательная модель.
+  examples:
+    valid:
+    - Ялтинский форум открылся.
+    invalid:
+    - Ялтенский форум открылся.
+- id: ru.orthography.compound_adjectives
+  title: Слитное, дефисное и раздельное написание сложных прилагательных
+  domain: orthography
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  explanation: Разграничить сложные прилагательные, образованные от сочинительных и подчинительных сочетаний.
+  requires:
+  - morphology
+  - syntax
+  - word_formation
+  - semantics
+  - lexicon
+  tags:
+  - lorugec
+  - spelling
+  - word-formation
+  detector:
+    kind: manual
+    note: Нужны морфемика, синтаксический источник, терминологический словарь и проверка оттенков значения.
+  examples:
+    valid:
+    - Северо-западный ветер усилился.
+    invalid:
+    - Северозападный ветер усилился.
+- id: ru.orthography.adverb_compounds
+  title: Слитное, раздельное и дефисное написание наречий
+  domain: orthography
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  explanation: Наречия с бывшими предлогами и именными формами требуют разграничения лексикализованных и свободных сочетаний.
+  requires:
+  - morphology
+  - syntax
+  - word_formation
+  - lexicon
+  tags:
+  - lorugec
+  - spelling
+  - word-formation
+  detector:
+    kind: manual
+    note: Нужны POS, лемматизация, падежная форма, словарь наречий и контекст зависимых слов.
+  examples:
+    valid:
+    - Он говорил вполголоса.
+    invalid:
+    - Он говорил в полголоса.
+- id: ru.orthography.taki_particle
+  title: 'Частица -таки: дефисное и раздельное написание'
+  domain: orthography
+  level: school
+  status: planned
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  explanation: После одних частей речи таки пишется через дефис, после других — раздельно.
+  requires:
+  - tokenization
+  - morphology
+  - lexicon
+  tags:
+  - lorugec
+  - spelling
+  detector:
+    kind: manual
+    note: Нужны POS предыдущего слова и список частиц/наречий; правило локальное, но не чисто regex.
+  examples:
+    valid:
+    - Он всё-таки пришёл.
+    invalid:
+    - Он всё таки пришёл.
+- id: ru.orthography.written_equivalents_complex_words
+  title: Дефис в письменных эквивалентах сложных слов с буквами, цифрами и символами
+  domain: orthography
+  level: school
+  status: planned
+  severity: info
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  - orthographia_ru
+  explanation: Проверять дефис в сложных обозначениях с цифровой, буквенной или символической первой частью.
+  requires:
+  - tokenization
+  - word_formation
+  tags:
+  - lorugec
+  - spelling
+  - word-formation
+  detector:
+    kind: manual
+    note: Нужна токенизация смешанных обозначений и whitelisted technical terms; важно не портить формулы и артикулы.
+  examples:
+    valid:
+    - 3D-модель готова.
+    invalid:
+    - 3D модель готова.
+- id: ru.punctuation.idiomatic_pair_no_comma
+  title: Не ставить запятую внутри фразеологических пар типа и так и эдак
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_punctuation
+  - rozental_online
+  explanation: Цельные фразеологизированные пары с повторяющимися союзами не всегда разделяются запятой.
+  requires:
+  - tokenization
+  - syntax
+  - lexicon
+  - semantics
+  tags:
+  - lorugec
+  - punctuation
+  - syntax-heavy
+  detector:
+    kind: manual
+    note: Нужен словарь цельных сочетаний и проверка, что это не обычный ряд однородных членов.
+  examples:
+    valid:
+    - Он попробовал и так и эдак.
+    invalid:
+    - Он попробовал и так, и эдак.

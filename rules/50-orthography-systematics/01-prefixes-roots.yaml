@@ -1,0 +1,248 @@
+version: 1
+rules:
+- id: ru.orthography.root_unstressed_vowels_checkable
+  title: Проверяемые безударные гласные в корне
+  domain: orthography
+  level: school
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  detector:
+    kind: manual
+    note: Нужны лемматизация, словообразовательные семьи, словарь проверочных форм и запрет ложных родственных связей.
+  examples:
+    valid:
+    - вода — воды
+    invalid:
+    - вада в стакане
+  requires:
+  - tokenization
+  - morphology
+  - word_formation
+  - lexicon
+  rule_family: morphology_dependent
+  tags:
+  - root-vowel
+  - roadmap
+- id: ru.orthography.root_unstressed_vowels_uncheckable
+  title: Непроверяемые безударные гласные в корне
+  domain: orthography
+  level: school
+  status: research
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  detector:
+    kind: manual
+    note: Требуется словарная модель и частотный список ошибок; правило не выводится алгоритмически без словаря.
+  examples:
+    valid:
+    - собака
+    invalid:
+    - сабака
+  requires:
+  - tokenization
+  - lexicon
+  - word_formation
+  tags:
+  - dictionary-spelling
+  - roadmap
+- id: ru.orthography.alternating_roots_lag_lozh
+  title: Чередующиеся корни лаг/лож
+  domain: orthography
+  level: school
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  detector:
+    kind: manual
+    note: 'Нужен root-class inventory: лаг перед суффиксом -а-, лож без него; исключения должны быть словарными.'
+  examples:
+    valid:
+    - полагать
+    - положить
+    invalid:
+    - пологать
+  requires:
+  - tokenization
+  - word_formation
+  - lexicon
+  rule_family: word_formation
+  tags:
+  - alternating-root
+  - roadmap
+- id: ru.orthography.alternating_roots_rast_ros
+  title: Чередующиеся корни раст/ращ/рос
+  domain: orthography
+  level: school
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  detector:
+    kind: manual
+    note: Нужна модель корневых алломорфов и список исключений вроде росток, Ростов, ростовщик.
+  examples:
+    valid:
+    - растение
+    - вырос
+    invalid:
+    - ростиение
+  requires:
+  - tokenization
+  - word_formation
+  - lexicon
+  rule_family: word_formation
+  tags:
+  - alternating-root
+  - exceptions
+- id: ru.orthography.alternating_roots_gar_gor
+  title: Чередующиеся корни гар/гор
+  domain: orthography
+  level: school
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  detector:
+    kind: manual
+    note: 'Нужно учитывать ударение: под ударением гар, без ударения гор, плюс словарные исключения.'
+  examples:
+    valid:
+    - загар
+    - загореть
+    invalid:
+    - загареть
+  requires:
+  - tokenization
+  - word_formation
+  - stress
+  rule_family: stress_dependent
+  tags:
+  - alternating-root
+  - stress
+- id: ru.orthography.alternating_roots_zar_zor
+  title: Чередующиеся корни зар/зор
+  domain: orthography
+  level: school
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  detector:
+    kind: manual
+    note: Нужны ударение и список исключений; без ударения обычно зар, под ударением возможна гласная по произношению.
+  examples:
+    valid:
+    - заря
+    - зори
+    invalid:
+    - зоря
+  requires:
+  - tokenization
+  - word_formation
+  - stress
+  rule_family: stress_dependent
+  tags:
+  - alternating-root
+  - stress
+- id: ru.orthography.alternating_roots_kas_kos
+  title: Чередующиеся корни кас/кос
+  domain: orthography
+  level: school
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  detector:
+    kind: manual
+    note: Требуется выявлять суффикс -а- после корня и границу морфем.
+  examples:
+    valid:
+    - касаться
+    - коснуться
+    invalid:
+    - косаться
+  requires:
+  - tokenization
+  - word_formation
+  rule_family: word_formation
+  tags:
+  - alternating-root
+- id: ru.orthography.alternating_roots_ber_bir
+  title: Чередующиеся корни бер/бир и родственные группы с -а-
+  domain: orthography
+  level: advanced
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  detector:
+    kind: manual
+    note: Нужен класс корней бер/бир, дер/дир, мер/мир, пер/пир, тер/тир, жег/жиг, блест/блист и проверка суффикса -а-.
+  examples:
+    valid:
+    - собирать
+    - соберу
+    invalid:
+    - соберать
+  requires:
+  - tokenization
+  - word_formation
+  - lexicon
+  rule_family: word_formation
+  tags:
+  - alternating-root
+  - root-class
+- id: ru.orthography.i_y_after_consonant_prefix
+  title: Ы/и после приставок на согласный
+  domain: orthography
+  level: school
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  detector:
+    kind: manual
+    note: Нужна граница приставки и корня, список иноязычных приставок и словарные исключения.
+  examples:
+    valid:
+    - сыграть
+    - предыстория
+    invalid:
+    - сиграть
+  requires:
+  - tokenization
+  - word_formation
+  - lexicon
+  rule_family: word_formation
+  tags:
+  - prefix
+  - root-initial-vowel
+- id: ru.orthography.separating_hard_sign_after_prefix
+  title: Разделительный твёрдый знак после приставки
+  domain: orthography
+  level: school
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  detector:
+    kind: manual
+    note: Нужна модель приставки на согласный и последующего е/ё/ю/я; важно отделять корневые сочетания.
+  examples:
+    valid:
+    - подъезд
+    - объявление
+    invalid:
+    - подезд
+  requires:
+  - tokenization
+  - word_formation
+  - lexicon
+  rule_family: word_formation
+  tags:
+  - hard-sign
+  - prefix

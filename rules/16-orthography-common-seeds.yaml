@@ -1,0 +1,127 @@
+version: 1
+rules:
+- id: ru.orthography.negative_pronoun_preposition_spacing_seed
+  title: Отрицательные местоимения с предлогом пишутся раздельно
+  domain: orthography
+  level: school
+  status: implemented
+  severity: error
+  source_refs:
+  - gramota_lopatin_full
+  - gramota_rules_1956
+  rationale: Seed-детектор ловит только слитные частотные ошибки, где корректная форма является устойчивым трёхсловным сочетанием.
+  explanation: 'Если внутри отрицательного местоимения есть предлог, части пишутся раздельно: ни у кого, ни с кем, не у кого.'
+  suggestion: Разделить частицу, предлог и местоименную основу.
+  detector:
+    kind: confusable_tokens
+    forms:
+    - ниукого=>ни у кого
+    - неукого=>не у кого
+    - нискем=>ни с кем
+    - нескем=>не с кем
+    - ниочём=>ни о чём
+    - ниочем=>ни о чём
+    - неочем=>не о чем
+    message: В отрицательных местоимениях с предлогом части пишутся раздельно.
+  examples:
+    valid:
+    - Ни у кого не было ключей.
+    - Мне не у кого спросить.
+    invalid:
+    - Ниукого не было ключей.
+    - Мне неукого спросить.
+  requires:
+  - tokenization
+  - lexicon
+  - word_formation
+  tags:
+  - не_ни
+  - pronoun
+  - spacing
+  - seed
+  confidence: high
+  false_positive_risk: low
+- id: ru.orthography.common_adverbial_phrase_spelling_seed
+  title: Частотные слитные ошибки в наречных и вводных сочетаниях
+  domain: orthography
+  level: school
+  status: implemented
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  - editorial_style_general
+  rationale: Это словарный seed частотных ошибок; полная модель требует классифицировать наречия, частицы и вводные сочетания.
+  explanation: Ряд устойчивых сочетаний и частиц пишется раздельно или через дефис, а не слитно.
+  suggestion: Заменить ошибочную слитную форму на нормативную форму из словаря seed-исправлений.
+  detector:
+    kind: confusable_tokens
+    forms:
+    - вобщем=>в общем
+    - вообщем=>в общем
+    - впринципе=>в принципе
+    - всмысле=>в смысле
+    - наконецто=>наконец-то
+    - помоему=>по-моему
+    - всётаки=>всё-таки
+    - всетаки=>всё-таки
+    - какбудто=>как будто
+    message: Похоже на слитную ошибку в устойчивом сочетании или частице.
+  examples:
+    valid:
+    - В общем, всё нормально.
+    - По-моему, это работает.
+    invalid:
+    - Вобщем, всё нормально.
+    - Помоему, это работает.
+  requires:
+  - tokenization
+  - lexicon
+  tags:
+  - common-confusable
+  - adverbial-expression
+  - seed
+  confidence: high
+  false_positive_risk: low
+- id: ru.orthography.temporal_preposition_phrase_seed
+  title: В течение, в продолжение, в заключение в обстоятельственных сочетаниях
+  domain: orthography
+  level: school
+  status: implemented
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  - gramota_rules_1956
+  rationale: Seed ограничен обстоятельственными сочетаниями с частотными зависимыми словами, чтобы не задеть буквальное значение существительных.
+  explanation: Производные предлоги в течение, в продолжение, в заключение пишутся с конечной е.
+  suggestion: Проверить, не используется ли здесь производный предлог со значением времени или композиционной части текста.
+  detector:
+    kind: phrase_map
+    forms:
+    - в течении дня=>в течение дня
+    - в течении часа=>в течение часа
+    - в течении недели=>в течение недели
+    - в течении месяца=>в течение месяца
+    - в течении года=>в течение года
+    - в продолжении дня=>в продолжение дня
+    - в продолжении часа=>в продолжение часа
+    - в заключении выступления=>в заключение выступления
+    - в заключении доклада=>в заключение доклада
+    message: В производном предлоге, вероятно, нужна форма с конечной е.
+  examples:
+    valid:
+    - В течении реки появились опасные водовороты.
+    - В течение дня пришло письмо.
+    invalid:
+    - В течении дня пришло письмо.
+    - В заключении доклада автор подвёл итог.
+  requires:
+  - tokenization
+  - lexicon
+  - syntax
+  - word_formation
+  tags:
+  - derivative-preposition
+  - phrase-map
+  - seed
+  confidence: medium
+  false_positive_risk: medium

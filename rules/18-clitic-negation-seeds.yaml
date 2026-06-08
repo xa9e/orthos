@@ -1,0 +1,151 @@
+version: 1
+rules:
+- id: ru.orthography.emphatic_to_particle_hyphen_seed
+  title: Усилительная частица -то после местоимений пишется через дефис
+  domain: orthography
+  level: school
+  status: implemented
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  rationale: Seed ограничен местоименными базами, чтобы не путать частицу то с указательным словом и связочными конструкциями.
+  explanation: Частица -то, примыкающая к предшествующему слову, обычно пишется через дефис.
+  suggestion: Поставить дефис между местоимением и частицей -то.
+  detector:
+    kind: clitic_hyphen_missing
+    group: emphatic_to_pronoun_seed
+    message: Усилительная частица -то после местоимения обычно пишется через дефис.
+  examples:
+    valid:
+    - Я-то понял, в чём проблема.
+    - Он-то точно придёт.
+    invalid:
+    - Я то понял, в чём проблема.
+    - Он то точно придёт.
+  requires:
+  - tokenization
+  - word_formation
+  tags:
+  - particle
+  - hyphen
+  - clitic
+  - seed
+  confidence: medium
+  false_positive_risk: medium
+- id: ru.orthography.ka_particle_hyphen_seed
+  title: Частица -ка после побудительных слов пишется через дефис
+  domain: orthography
+  level: school
+  status: implemented
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  rationale: Seed ограничен частотными побудительными формами; полная модель должна учитывать императив и разговорные частицы.
+  explanation: Частица -ка, примыкающая к предшествующему слову, пишется через дефис.
+  suggestion: Поставить дефис перед частицей -ка.
+  detector:
+    kind: clitic_hyphen_missing
+    group: imperative_ka_seed
+    message: Частица -ка после побудительного слова обычно пишется через дефис.
+  examples:
+    valid:
+    - Ну-ка проверь ещё раз.
+    - Скажи-ка, что произошло.
+    invalid:
+    - Ну ка проверь ещё раз.
+    - Скажи ка, что произошло.
+  requires:
+  - tokenization
+  - word_formation
+  tags:
+  - particle
+  - hyphen
+  - imperative
+  - clitic
+  - seed
+  confidence: medium
+  false_positive_risk: medium
+- id: ru.orthography.general_postpositive_particles_hyphen
+  title: Постпозитивные частицы -де, -ка, -те, -то, -с с предшествующим словом
+  domain: orthography
+  level: intermediate
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  rationale: Полная проверка требует отличать частицу то от местоимения и связочного элемента и учитывать разговорные частицы.
+  explanation: Ряд постпозитивных частиц пишется через дефис с предшествующим словом.
+  detector:
+    kind: manual
+    note: Нужна расширенная clitic model с частеречными и синтаксическими блокерами.
+  examples:
+    valid:
+    - Ответь-ка на вопрос.
+    - Он-то понял.
+    invalid:
+    - Ответь ка на вопрос.
+    - Он то понял.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  - word_formation
+  tags:
+  - particle
+  - hyphen
+  - clitic
+- id: ru.orthography.ne_participle_dependent_word
+  title: Не с причастиями при зависимом слове
+  domain: orthography
+  level: advanced
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  rationale: Для проверки нужен разбор причастного оборота и зависимых слов, иначе правило будет шуметь.
+  explanation: При наличии зависимого слова не с причастием обычно пишется раздельно.
+  detector:
+    kind: manual
+    note: Нужны participle analysis, dependent-word candidate и relation-level DiagnosticProof.
+  examples:
+    valid:
+    - Не прочитанная до конца книга лежала на столе.
+    - Непрочитанная книга лежала на столе.
+    invalid:
+    - Непрочитанная до конца книга лежала на столе.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  tags:
+  - не
+  - participle
+  - dependency
+- id: ru.orthography.ne_opposition_nouns_adjectives_adverbs
+  title: Раздельное не при противопоставлении с а
+  domain: orthography
+  level: advanced
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  rationale: Нужно отличать настоящее противопоставление от присоединения и учитывать часть речи левого компонента.
+  explanation: С существительными, прилагательными и наречиями на -о не пишется раздельно при противопоставлении с союзом а.
+  detector:
+    kind: manual
+    note: Нужна модель negation scope и coordination/opposition relation.
+  examples:
+    valid:
+    - Это не правда, а ложь.
+    - Он говорил не громко, а тихо.
+    invalid:
+    - Это неправда, а ложь.
+    - Он говорил негромко, а тихо.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  tags:
+  - не
+  - opposition
+  - coordination

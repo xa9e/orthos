@@ -1,0 +1,77 @@
+version: 1
+rules:
+- id: ru.orthography.compound_preposition_hyphen_seed
+  title: Дефис в сложных предлогах из-за и из-под
+  domain: orthography
+  level: school
+  status: implemented
+  severity: error
+  source_refs:
+  - gramota_lopatin_full
+  - gramota_rules_1956
+  rationale: Узкий seed ловит только раздельное написание двух частотных сложных предлогов, не пытаясь анализировать все дефисные служебные слова.
+  explanation: Сложные предлоги из-за и из-под пишутся через дефис.
+  suggestion: Заменить пробел между частями сложного предлога на дефис.
+  detector:
+    kind: phrase_map
+    forms:
+    - из за=>из-за
+    - из под=>из-под
+    message: Сложный предлог здесь обычно пишется через дефис.
+  examples:
+    valid:
+    - Из-за дождя встречу перенесли.
+    - Из-под стола выглянул кот.
+    invalid:
+    - Из за дождя встречу перенесли.
+    - Из под стола выглянул кот.
+  requires:
+  - tokenization
+  - lexicon
+  - syntax
+  tags:
+  - hyphen
+  - preposition
+  - seed
+  confidence: high
+  false_positive_risk: low
+- id: ru.orthography.koe_indefinite_hyphen_seed
+  title: Кое- с местоимениями и местоименными наречиями пишется через дефис
+  domain: orthography
+  level: school
+  status: implemented
+  severity: error
+  source_refs:
+  - gramota_lopatin_full
+  - gramota_rules_1956
+  rationale: Это поверхностный seed для частотных раздельных ошибок; полная модель должна учитывать весь класс неопределённых местоимений и наречий.
+  explanation: Компонент кое- в неопределённых местоимениях и местоименных наречиях обычно присоединяется через дефис.
+  suggestion: Использовать дефисное написание с кое-.
+  detector:
+    kind: phrase_map
+    forms:
+    - кое кто=>кое-кто
+    - кое что=>кое-что
+    - кое где=>кое-где
+    - кое как=>кое-как
+    - кое куда=>кое-куда
+    message: В неопределённом слове с кое- обычно нужен дефис.
+  examples:
+    valid:
+    - Кое-кто уже пришёл.
+    - Кое-где остались следы.
+    invalid:
+    - Кое кто уже пришёл.
+    - Кое где остались следы.
+  requires:
+  - tokenization
+  - lexicon
+  - syntax
+  - word_formation
+  tags:
+  - hyphen
+  - pronoun
+  - word-formation
+  - seed
+  confidence: high
+  false_positive_risk: low

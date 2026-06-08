@@ -1,0 +1,3 @@
+# form	lemma	pos	features	lemma_id	paradigm_id	source_id	stress
+замок	замок	NOUN	gender=masc|number=sing|case=nom|animacy=inan	lemma:zamok	paradigm:castle	fixture.project	за́мок
+замка	замок	NOUN	gender=masc|number=sing|case=gen|animacy=inan	lemma:zamok	paradigm:castle	fixture.project

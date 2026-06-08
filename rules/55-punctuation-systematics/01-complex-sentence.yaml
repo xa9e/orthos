@@ -1,0 +1,218 @@
+version: 1
+rules:
+- id: ru.punctuation.comma_between_compound_sentence_parts
+  title: Запятая между частями сложносочинённого предложения
+  domain: punctuation
+  level: intermediate
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_punctuation
+  - gramota_lopatin_full
+  detector:
+    kind: manual
+    note: Нужны границы предикативных центров, сочинительный союз и исключения с общим второстепенным членом или общей придаточной частью.
+  examples:
+    valid:
+    - Солнце взошло, и город проснулся.
+    invalid:
+    - Солнце взошло и город проснулся.
+  requires:
+  - tokenization
+  - syntax
+  rule_family: syntax_dependent
+  tags:
+  - compound-sentence
+  - comma
+- id: ru.punctuation.no_comma_with_common_element_compound
+  title: Нет запятой между частями ССП при общем элементе
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - gramota_punctuation
+  - gramota_lopatin_full
+  detector:
+    kind: manual
+    note: Требуется доказывать общий второстепенный член, общую придаточную часть или общее вводное слово.
+  examples:
+    valid:
+    - Утром похолодало и пошёл снег.
+    invalid:
+    - Утром похолодало, и пошёл снег.
+  requires:
+  - tokenization
+  - syntax
+  - semantics
+  rule_family: syntax_dependent
+  tags:
+  - compound-sentence
+  - exception
+- id: ru.punctuation.comma_between_subordinate_and_main_clause
+  title: Запятая между главной и придаточной частью
+  domain: punctuation
+  level: school
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_punctuation
+  - gramota_lopatin_full
+  detector:
+    kind: manual
+    note: Нужна модель придаточных союзов и союзных слов, границы клаузы и подавление внутри прямой речи.
+  examples:
+    valid:
+    - Я знаю, что он придёт.
+    invalid:
+    - Я знаю что он придёт.
+  requires:
+  - tokenization
+  - syntax
+  rule_family: syntax_dependent
+  tags:
+  - subordinate-clause
+  - comma
+- id: ru.punctuation.no_comma_between_homogeneous_subordinate_clauses
+  title: Нет запятой между однородными придаточными при одиночном и/или
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - gramota_punctuation
+  detector:
+    kind: manual
+    note: Нужно определять общее главное предложение и однородность придаточных, а не просто видеть два союза.
+  examples:
+    valid:
+    - Я знаю, что он придёт и что встреча состоится.
+    invalid:
+    - Я знаю, что он придёт, и что встреча состоится.
+  requires:
+  - tokenization
+  - syntax
+  rule_family: syntax_dependent
+  tags:
+  - subordinate-clause
+  - homogeneous
+- id: ru.punctuation.conjunction_junction_comma
+  title: Запятая на стыке союзов
+  domain: punctuation
+  level: expert
+  status: research
+  severity: warning
+  source_refs:
+  - gramota_punctuation
+  - gramota_lopatin_full
+  detector:
+    kind: manual
+    note: Нужна проверка возможности изъять придаточную часть и наличие второй части союза то/так/но.
+  examples:
+    valid:
+    - Он сказал, что, если будет дождь, встречу перенесут.
+    invalid:
+    - Он сказал, что если будет дождь, встречу перенесут.
+  requires:
+  - tokenization
+  - syntax
+  rule_family: syntax_dependent
+  tags:
+  - conjunction-junction
+  - comma
+- id: ru.punctuation.comma_before_adversative_conjunction_basic
+  title: Запятая перед а, но, зато, однако в противопоставлении
+  domain: punctuation
+  level: school
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_punctuation
+  detector:
+    kind: manual
+    note: Нужны отношения сочинения и отсечение омонимичных употреблений однако как вводного слова.
+  examples:
+    valid:
+    - Я хотел уйти, но остался.
+    invalid:
+    - Я хотел уйти но остался.
+  requires:
+  - tokenization
+  - syntax
+  rule_family: syntax_dependent
+  tags:
+  - coordination
+  - comma
+- id: ru.punctuation.dash_between_subject_predicate_nominal
+  title: Тире между подлежащим и именной частью сказуемого
+  domain: punctuation
+  level: intermediate
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  - russian_grammar_1980
+  detector:
+    kind: manual
+    note: Нужны типы подлежащего и сказуемого, нулевая связка, частицы-исключения и интонационные варианты.
+  examples:
+    valid:
+    - Москва — столица России.
+    invalid:
+    - Москва столица России.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  rule_family: syntax_dependent
+  tags:
+  - dash
+  - subject-predicate
+- id: ru.punctuation.dash_in_asyndetic_complex_sentence
+  title: Тире в бессоюзном сложном предложении
+  domain: punctuation
+  level: expert
+  status: research
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  detector:
+    kind: manual
+    note: Нужны семантические отношения следствия, условия, времени и резкого противопоставления; без них правило будет шумным.
+  examples:
+    valid:
+    - Солнце село — стало холодно.
+    invalid:
+    - Солнце село стало холодно.
+  requires:
+  - tokenization
+  - syntax
+  - semantics
+  rule_family: syntax_dependent
+  tags:
+  - dash
+  - asyndetic
+- id: ru.punctuation.colon_in_asyndetic_explanation
+  title: Двоеточие в бессоюзном предложении с пояснением или причиной
+  domain: punctuation
+  level: expert
+  status: research
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  detector:
+    kind: manual
+    note: 'Требуется семантическая классификация второй части: причина, пояснение, раскрытие содержания.'
+  examples:
+    valid:
+    - "Я понял одно: времени почти не осталось."
+    invalid:
+    - "Я понял одно времени почти не осталось."
+  requires:
+  - tokenization
+  - syntax
+  - semantics
+  rule_family: syntax_dependent
+  tags:
+  - colon
+  - asyndetic

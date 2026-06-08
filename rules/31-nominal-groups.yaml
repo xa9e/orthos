@@ -1,0 +1,169 @@
+version: 1
+rules:
+- id: ru.grammar.nominal_group_modifier_agreement_basic
+  title: Согласование определений с головным словом в короткой именной группе
+  domain: grammar
+  level: school
+  status: implemented
+  severity: warning
+  source_refs:
+  - russian_grammar_1980
+  - gramota_lopatin_full
+  - ruscorpora_morph
+  rationale: >-
+    Соседнее `прилагательное + существительное` не видит ошибку в первом определении группы
+    `определение + определение + существительное`. Правило использует явный NominalGroupCandidate,
+    чтобы проверять не только ближайший модификатор перед головой.
+  explanation: Определения внутри именной группы обычно согласуются с головным существительным в падеже, числе и роде.
+  suggestion: Проверить форму определения, удалённого от головного существительного другим определением.
+  detector:
+    kind: nominal_group_modifier_agreement_basic
+    message: Определение в именной группе может быть не согласовано с головным словом.
+  examples:
+    valid:
+    - Новый важный приказ вступил в силу.
+    - Новому важному приказу присвоили номер.
+    invalid:
+    - Новый важному приказу присвоили номер.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  rule_family: syntax_dependent
+  confidence: low
+  false_positive_risk: high
+  pattern:
+    kind: dependency
+    description: Кандидат `modifier* -> nominal_head` внутри короткой именной группы без пунктуации и переноса строки.
+    captures:
+    - modifier
+    - nominal_head
+  constraints:
+  - kind: agreement
+    features:
+    - case
+    - number
+    - gender
+    description: Каждое уверенно распознанное определение должно быть совместимо с головным существительным.
+  - kind: token_context
+    description: Seed проверяет только не-ближайшие определения в группах до трёх модификаторов и молчит при неоднозначной морфологии.
+  evidence:
+  - kind: normative_source
+    source_ref: gramota_lopatin_full
+  - kind: corpus_attestation
+    source_ref: ruscorpora_morph
+  implementation_notes: >-
+    Реализовано поверх NominalGroupCandidate. Ближайшее определение оставлено старому adjacent adj+noun rule,
+    чтобы не плодить дубликаты; длинные группы, координация и причастные обороты пока не анализируются.
+- id: ru.grammar.compound_numeral_nominal_group_agreement_basic
+  title: Управление существительным после составного количественного числительного
+  domain: grammar
+  level: school
+  status: implemented
+  severity: warning
+  source_refs:
+  - russian_grammar_1980
+  - gramota_lopatin_full
+  - ruscorpora_morph
+  rationale: >-
+    умел проверять только однословное числительное перед короткой именной группой. Это правило
+    вводит NumeralPhraseCandidate и проверяет голову группы после составного числительного вроде
+    `двадцать два новых дома`, где управляющий класс задаётся последним компонентом числительного.
+  explanation: В составных количественных числительных форма существительного обычно определяется последним словом числительного.
+  suggestion: Проверить падеж и число головного существительного после составного числительного.
+  detector:
+    kind: compound_numeral_nominal_group_agreement_basic
+    message: Существительное после составного числительного может иметь неверный падеж или число.
+  examples:
+    valid:
+    - Двадцать два новых дома стояли рядом.
+    - Двадцать пять домов снесли.
+    invalid:
+    - Двадцать два новых дом стояли рядом.
+    - Двадцать пять дома снесли.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  rule_family: syntax_dependent
+  confidence: low
+  false_positive_risk: high
+  pattern:
+    kind: dependency
+    description: Кандидат `составное числительное -> головное существительное` через ноль–три определения без пунктуации и переноса строки.
+    captures:
+    - numeral_phrase
+    - modifier
+    - nominal_head
+  constraints:
+  - kind: agreement
+    features:
+    - case
+    - number
+    description: Последний компонент составного числительного задаёт ожидаемые падеж и число головного существительного.
+  - kind: token_context
+    description: Seed покрывает только непрерывные числительные из двух-трёх слов и короткие именные группы; дроби, диапазоны и облические падежи пока подавляются неоднозначностью.
+  evidence:
+  - kind: normative_source
+    source_ref: gramota_lopatin_full
+  - kind: corpus_attestation
+    source_ref: ruscorpora_morph
+  implementation_notes: >-
+    Реализовано через NumeralPhraseCandidate и QuantifiedNominalGroupCandidate. Кандидат допускается только если все слова числительной фразы имеют уверенный NUMR-анализ; совместимость проверяется по последнему компоненту.
+- id: ru.grammar.typed_compound_numeral_nominal_group_agreement_basic
+  title: Управление существительным после длинного составного числительного
+  domain: grammar
+  level: school
+  status: implemented
+  severity: warning
+  source_refs:
+  - russian_grammar_1980
+  - gramota_lopatin_full
+  - ruscorpora_morph
+  rationale: >-
+    проверял двухсловные количественные фразы через последний компонент, но модель ещё не
+    различала типы компонентов числительного и могла бы спутать неполную фразу `сто двадцать`
+    с полной фразой `сто двадцать два`. Это правило использует NumeralComponentSlot и выбирает
+    управляющий компонент внутри максимальной числительной фразы.
+  explanation: В длинном составном количественном числительном форма существительного обычно определяется последним значимым количественным компонентом.
+  suggestion: Проверить падеж и число головного существительного после длинного составного числительного.
+  detector:
+    kind: typed_compound_numeral_nominal_group_agreement_basic
+    message: Существительное после длинного составного числительного может иметь неверный падеж или число.
+  examples:
+    valid:
+    - Сто двадцать два новых дома стояли рядом.
+    - Сто двадцать пять домов снесли.
+    invalid:
+    - Сто двадцать два новых дом стояли рядом.
+    - Сто двадцать пять дома снесли.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  rule_family: syntax_dependent
+  confidence: low
+  false_positive_risk: high
+  pattern:
+    kind: dependency
+    description: Кандидат `typed numeral component* -> nominal_head` через ноль–три определения без пунктуации и переноса строки.
+    captures:
+    - numeral_component
+    - governing_component
+    - nominal_head
+  constraints:
+  - kind: agreement
+    features:
+    - case
+    - number
+    description: Управляющий компонент числительной фразы задаёт ожидаемые падеж и число головного существительного.
+  - kind: token_context
+    description: Seed покрывает непрерывные числительные из трёх слов; частичные фразы подавляются, если следующий токен также является уверенным числительным.
+  evidence:
+  - kind: normative_source
+    source_ref: gramota_lopatin_full
+  - kind: corpus_attestation
+    source_ref: ruscorpora_morph
+  implementation_notes: >-
+    Реализовано поверх NumeralComponentSlot. Правило не дублирует двухсловный detector: оно запускается
+    только на фразах длиной от трёх компонентов и выбирает governing_component вместо слепого `last()`.

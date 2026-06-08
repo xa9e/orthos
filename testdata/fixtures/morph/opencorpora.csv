@@ -1,0 +1,3 @@
+form,lemma,pos,grammemes,lemma_id,paradigm_id,source_id,stress
+мир,мир,NOUN,inan|masc|nomn|sing,opencorpora:10,opencorpora:paradigm:10,fixture.opencorpora.csv,
+мира,мир,NOUN,inan|masc|gent|sing,opencorpora:10,opencorpora:paradigm:10,fixture.opencorpora.csv,ми́ра

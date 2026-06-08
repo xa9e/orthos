@@ -1,0 +1,30 @@
+# lemma	complement_kind	preposition	cases	source_id	note
+ждать	direct_object		gen	project.verb_government_seed	direct genitive object
+дождаться	direct_object		gen	project.verb_government_seed	direct genitive object
+достичь	direct_object		gen	project.verb_government_seed	direct genitive object
+добиться	direct_object		gen	project.verb_government_seed	direct genitive object
+управлять	direct_object		ins	project.verb_government_seed	direct instrumental object
+руководить	direct_object		ins	project.verb_government_seed	direct instrumental object
+владеть	direct_object		ins	project.verb_government_seed	direct instrumental object
+пользоваться	direct_object		ins	project.verb_government_seed	direct instrumental object
+оплатить	direct_object		acc	project.verb_government_seed	direct accusative object
+оплачивать	direct_object		acc	project.verb_government_seed	direct accusative object
+проверить	direct_object		acc	project.verb_government_seed	direct accusative object
+проверять	direct_object		acc	project.verb_government_seed	direct accusative object
+читать	direct_object		acc	project.verb_government_seed	direct accusative object
+исправить	direct_object		acc	project.verb_government_seed	direct accusative object
+исправлять	direct_object		acc	project.verb_government_seed	direct accusative object
+помочь	direct_object		dat	project.verb_government_seed	direct dative object
+помогать	direct_object		dat	project.verb_government_seed	direct dative object
+мешать	direct_object		dat	project.verb_government_seed	direct dative object
+доверять	direct_object		dat	project.verb_government_seed	direct dative object
+угрожать	direct_object		dat	project.verb_government_seed	direct dative object
+следовать	direct_object		dat	project.verb_government_seed	direct dative object
+говорить	prepositional_object	о	prep	project.verb_government_seed	topic complement о + prepositional
+рассказывать	prepositional_object	о	prep	project.verb_government_seed	topic complement о + prepositional
+думать	prepositional_object	о	prep	project.verb_government_seed	topic complement о + prepositional
+заботиться	prepositional_object	о	prep	project.verb_government_seed	concern complement о + prepositional
+надеяться	prepositional_object	на	acc	project.verb_government_seed	object complement на + accusative
+рассчитывать	prepositional_object	на	acc	project.verb_government_seed	object complement на + accusative
+верить	prepositional_object	в	acc	project.verb_government_seed	belief complement в + accusative
+участвовать	prepositional_object	в	prep	project.verb_government_seed	participation complement в + prepositional

@@ -1,0 +1,74 @@
+version: 1
+rules:
+- id: ru.style.document_abbreviation_first_mention_seed
+  title: Первое употребление повторяющейся аббревиатуры желательно раскрывать
+  domain: style
+  level: advanced
+  status: implemented
+  severity: info
+  source_refs:
+  - editorial_style_general
+  - ru_guard_mvp
+  rationale: Документный seed смотрит на повторяющиеся аббревиатуры на уровне всего текста. Он не знает предметную область, поэтому правило намеренно стилистическое и не входит в default-safe профиль.
+  explanation: Если аббревиатура встречается несколько раз, первое употребление часто стоит дать с расшифровкой в скобках.
+  detector:
+    kind: document_abbreviation_expansion
+    message: Повторяющаяся аббревиатура впервые встречается без расшифровки.
+  examples:
+    valid:
+    - Организация Объединённых Наций (ООН) обновила доклад. ООН опубликовала приложение.
+    - "Application Programming Interface (API) описан в спецификации. API не требует расшифровки в техническом фрагменте."
+    invalid:
+    - ООН обновила доклад. ООН опубликовала приложение.
+    - ЦБ изменил прогноз. ЦБ обновил комментарий.
+  requires:
+  - tokenization
+  - syntax
+  tags:
+  - document-context
+  - abbreviation
+  - strict-only
+  confidence: medium
+  false_positive_risk: high
+- id: ru.style.document_style_consistency_seed
+  title: Консистентность оформления заголовков и списков
+  domain: style
+  level: advanced
+  status: implemented
+  severity: info
+  source_refs:
+  - editorial_style_general
+  - ru_guard_mvp
+  rationale: Документный seed проверяет только грубые признаки смешанного оформления. Он не пытается навязать конкретный style guide.
+  explanation: В одном документе обычно лучше не смешивать маркеры списков и пунктуационное оформление однотипных заголовков без причины.
+  detector:
+    kind: document_style_consistency
+    message: Документ выглядит оформленным неоднородно; проверьте стиль заголовков или списков.
+  examples:
+    valid:
+    - |
+      # План
+      - первый пункт
+      - второй пункт
+    - |
+      Раздел
+      - первый пункт
+      - второй пункт
+    invalid:
+    - |
+      # План
+      - первый пункт
+      * второй пункт
+    - |
+      # План.
+      # Итоги
+      - первый пункт
+  requires:
+  - tokenization
+  - syntax
+  tags:
+  - document-context
+  - style-profile
+  - strict-only
+  confidence: medium
+  false_positive_risk: medium

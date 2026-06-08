@@ -1,0 +1,181 @@
+version: 1
+rules:
+- id: ru.orthography.mixed_alphabet_word
+  title: Смешение кириллицы и латиницы в одном слове
+  domain: orthography
+  level: basic
+  status: implemented
+  severity: error
+  source_refs:
+  - ru_guard_mvp
+  - editorial_style_general
+  explanation: 'Часто это техническая подмена омоглифов: латинская a в русском слове выглядит как кириллическая
+    а, но кодовая точка другая.'
+  suggestion: Проверить раскладку и заменить чужую букву.
+  requires:
+  - tokenization
+  detector:
+    kind: mixed_alphabet_word
+    message: В слове смешаны кириллические и латинские буквы.
+  examples:
+    valid:
+    - мама
+    invalid:
+    - мaма
+  confidence: high
+  false_positive_risk: medium
+- id: ru.orthography.zhi_shi_cha_shcha_basic
+  title: ЖИ/ШИ, ЧА/ЩА, ЧУ/ЩУ
+  domain: orthography
+  level: basic
+  status: implemented
+  severity: error
+  source_refs:
+  - ru_guard_mvp
+  - gramota_rules_1956
+  - gramota_lopatin_full
+  explanation: Поверхностная проверка частотных школьных сочетаний; не заменяет словарь исключений и историю заимствований.
+  requires:
+  - tokenization
+  detector:
+    kind: zhi_shi_cha_shcha
+    exceptions:
+    - брошюра
+    - жюри
+    - парашют
+    message: Подозрительное написание после ж, ш, ч, щ.
+  examples:
+    valid:
+    - жираф
+    - парашют
+    invalid:
+    - жыраф
+  confidence: high
+  false_positive_risk: low
+- id: ru.orthography.ne_common_confusables
+  title: Частотные слитные ошибки с НЕ
+  domain: orthography
+  level: basic
+  status: implemented
+  severity: error
+  source_refs:
+  - ru_guard_mvp
+  - gramota_lopatin_full
+  explanation: Это словарь частотных форм, а не полная проверка написания НЕ с глаголами.
+  requires:
+  - tokenization
+  - lexicon
+  detector:
+    kind: confusable_tokens
+    forms:
+    - незнаю=>не знаю
+    - немогу=>не могу
+    - нехочу=>не хочу
+    - небуду=>не буду
+    - небыл=>не был
+    - небыла=>не была
+    - небыло=>не было
+    - небудет=>не будет
+    message: Обнаружена частотная слитная ошибка с НЕ.
+  examples:
+    valid:
+    - Я не знаю.
+    invalid:
+    - Я незнаю.
+  confidence: medium
+  false_positive_risk: medium
+- id: ru.style.colloquial_spellings_basic
+  title: Частотные разговорные написания в нейтральном тексте
+  domain: style
+  level: basic
+  status: implemented
+  severity: warning
+  source_refs:
+  - ru_guard_mvp
+  - rulang_mvp
+  - editorial_style_general
+  explanation: Для художественной речи и диалогов это может быть намеренно; правило должно отключаться профилем.
+  requires:
+  - tokenization
+  - lexicon
+  detector:
+    kind: confusable_tokens
+    forms:
+    - щас=>сейчас
+    - седня=>сегодня
+    - ваще=>вообще
+    - чо=>что
+    - ничо=>ничего
+    - скока=>сколько
+    message: Слово похоже на разговорное или ненормативное написание.
+  examples:
+    valid:
+    - Сейчас приду.
+    invalid:
+    - Щас приду.
+  confidence: medium
+  false_positive_risk: medium
+- id: ru.orthography.tsya_tsya_context_heuristic
+  title: Контекстная эвристика -тся/-ться
+  domain: orthography
+  level: school
+  status: implemented
+  severity: warning
+  source_refs:
+  - ru_guard_mvp
+  - gramota_lopatin_full
+  explanation: 'Эвристика: после модальных слов и будущего времени ожидается инфинитив на -ться; после явных подлежащих
+    часто ожидается личная форма на -тся.'
+  suggestion: 'Проверить вопрос: что делать? — -ться; что делает? — -тся.'
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  detector:
+    kind: tsya_heuristic
+    infinitive_triggers:
+    - надо
+    - нужно
+    - можно
+    - нельзя
+    - должен
+    - должна
+    - должно
+    - должны
+    - хочу
+    - хочешь
+    - хочет
+    - хотим
+    - хотите
+    - хотят
+    - буду
+    - будешь
+    - будет
+    - будем
+    - будете
+    - будут
+    - пора
+    - обязан
+    - обязана
+    - обязаны
+    finite_subjects:
+    - я
+    - ты
+    - он
+    - она
+    - оно
+    - мы
+    - вы
+    - они
+    - кто
+    - что
+    message: Проверьте написание -тся/-ться в этом контексте.
+  examples:
+    valid:
+    - Надо учиться.
+    - Он учится.
+    invalid:
+    - Надо учится.
+    - Он учиться.
+  confidence: low
+  false_positive_risk: high

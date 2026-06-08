@@ -1,0 +1,143 @@
+version: 1
+source_refs: []
+rules:
+- id: ru.punctuation.initial_subordinate_clause_comma
+  title: Запятая после придаточного предложения в препозиции
+  domain: punctuation
+  level: advanced
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  - gramota_punctuation
+  rationale: Нужны границы придаточного предложения, чтобы не принимать первое ближайшее слово за конец оборота. Правило должно
+    опираться на sentence/token window primitives и будущий синтаксический hook.
+  requires:
+  - tokenization
+  - sentence_boundaries
+  - syntax
+  detector:
+    kind: manual
+    note: 'Пример цели: ''Если он придёт мы начнём'' -> запятая после ''придёт''. Требуется безопасное определение правой
+      границы придаточного.'
+  examples:
+    valid:
+    - Если он придёт, мы начнём.
+    invalid:
+    - Если он придёт мы начнём.
+- id: ru.punctuation.comma_before_adversative_conjunction
+  title: Запятая перед противительными союзами а/но между частями предложения
+  domain: punctuation
+  level: school
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  - gramota_punctuation
+  rationale: Поверхностная проверка 'а/но' шумит на коротких фрагментах и внутри устойчивых конструкций; нужен хотя бы минимальный
+    признак предикативных центров по обе стороны.
+  requires:
+  - tokenization
+  - sentence_boundaries
+  - syntax
+  - morphology
+  detector:
+    kind: manual
+    note: Не запускать без предикативного фильтра и suppression для заголовков, эллипсиса и цитат.
+  examples:
+    valid:
+    - Он устал, но продолжил работу.
+    invalid:
+    - Он устал но продолжил работу.
+- id: ru.punctuation.direct_speech_author_words_boundary
+  title: 'Граница прямой речи и слов автора: двоеточие, тире, запятая'
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  - gramota_punctuation
+  rationale: Нужна модель прямой речи, кавычек, тире и позиции слов автора. Простая regex-проверка даст много ложных срабатываний.
+  requires:
+  - tokenization
+  - sentence_boundaries
+  - syntax
+  detector:
+    kind: manual
+    note: 'Сначала выделить quote/direct-speech spans; затем проверять только безопасные шаблоны вроде ''Он сказал: «...»''.'
+  examples:
+    valid:
+    - 'Он сказал: «Пора».'
+    invalid:
+    - Он сказал «Пора».
+- id: ru.punctuation.comparative_kak_turnover
+  title: Обособление сравнительных оборотов с как
+  domain: punctuation
+  level: expert
+  status: research
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  - gramota_punctuation
+  rationale: '''Как'' бывает союзом, частью сказуемого, приложением, фразеологизмом и сравнительным оборотом. Без синтаксической
+    роли правило будет шумным.'
+  requires:
+  - tokenization
+  - syntax
+  - semantics
+  detector:
+    kind: manual
+    note: Требуются whitelist фразеологизмов, predicate checks и контекстная классификация 'как'.
+  examples:
+    valid:
+    - Он работал как инженер.
+    - Она пела, как птица.
+    invalid:
+    - Она пела как птица.
+- id: ru.punctuation.clarifying_adverbial_turnover
+  title: Обособление уточняющих обстоятельственных оборотов
+  domain: punctuation
+  level: expert
+  status: research
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  - gramota_punctuation
+  rationale: 'Уточнение зависит от семантики и информационной структуры: ''внизу у реки'' не всегда равно ''внизу, у реки''.'
+  requires:
+  - tokenization
+  - syntax
+  - semantics
+  detector:
+    kind: manual
+    note: Будущий detector должен быть opt-in или иметь низкую severity; безопасный MVP возможен только для ограниченных маркеров
+      'то есть', 'а именно'.
+  examples:
+    valid:
+    - Там, внизу, шумела река.
+    invalid:
+    - Там внизу шумела река.
+- id: ru.punctuation.parenthetical_insert_boundaries
+  title: Границы вставных конструкций в скобках и тире
+  domain: punctuation
+  level: advanced
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  - gramota_punctuation
+  rationale: 'Нужны reusable suppression spans: внутри скобок текущие эвристики не должны порождать внешние пунктуационные
+    советы.'
+  requires:
+  - tokenization
+  - sentence_boundaries
+  - syntax
+  detector:
+    kind: manual
+    note: Сначала переиспользовать delimiter span primitives; затем проверять только края вставки, а не её внутреннюю пунктуацию.
+  examples:
+    valid:
+    - Он — если честно — устал.
+    invalid:
+    - Он — если честно устал.

@@ -1,0 +1,101 @@
+version: 1
+rules:
+- id: ru.grammar.poltora_declension_full
+  title: Склонение числительного полтора
+  domain: grammar
+  level: advanced
+  status: planned
+  severity: warning
+  source_refs:
+  - russian_grammar_1980
+  detector:
+    kind: manual
+    note: Нужны формы полтора/полторы/полутора и согласование с существительным.
+  examples:
+    valid:
+    - полутора часов
+    invalid:
+    - полтора часов
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  rule_family: morphology_dependent
+  tags:
+  - numeral
+  - declension
+- id: ru.grammar.oba_obe_declension_full
+  title: Склонение числительных оба и обе
+  domain: grammar
+  level: advanced
+  status: planned
+  severity: warning
+  source_refs:
+  - russian_grammar_1980
+  detector:
+    kind: manual
+    note: 'Нужны род существительного и падеж всей группы: обоих братьев, обеих сестёр.'
+  examples:
+    valid:
+    - обеих сестёр
+    invalid:
+    - обоих сестёр
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  rule_family: morphology_dependent
+  tags:
+  - numeral
+  - declension
+- id: ru.grammar.comparative_degree_government
+  title: Управление сравнительной степени
+  domain: grammar
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - russian_grammar_1980
+  detector:
+    kind: manual
+    note: Нужны конструкции чем, родительный сравнения и запрет смешивать модели.
+  examples:
+    valid:
+    - выше меня
+    - выше, чем я
+    invalid:
+    - выше чем меня
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  rule_family: syntax_dependent
+  tags:
+  - comparison
+  - government
+- id: ru.grammar.aspect_pair_context
+  title: Видовая пара глагола в контексте
+  domain: grammar
+  level: expert
+  status: research
+  severity: warning
+  source_refs:
+  - russian_grammar_1980
+  - ruscorpora_morph
+  detector:
+    kind: manual
+    note: Нужны вид, время, контекст завершённости/повторяемости и семантика предиката; это не regex-задача.
+  examples:
+    valid:
+    - Он решил задачу за час.
+    invalid:
+    - Он решал задачу за час.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  - semantics
+  rule_family: morphology_dependent
+  tags:
+  - aspect
+  - verb

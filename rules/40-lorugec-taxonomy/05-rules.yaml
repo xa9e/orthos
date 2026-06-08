@@ -1,0 +1,189 @@
+version: 1
+source_refs: []
+rules:
+- id: ru.punctuation.nondecomposable_phrase_no_comma
+  title: Пунктуация в неразложимых цельных сочетаниях
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_punctuation
+  - orthographia_ru
+  explanation: Устойчивые сочетания внутри придаточных и сравнительных оборотов могут не требовать внутренней запятой.
+  requires:
+  - tokenization
+  - syntax
+  - lexicon
+  - semantics
+  tags:
+  - lorugec
+  - punctuation
+  - syntax-heavy
+  detector:
+    kind: manual
+    note: Нужен словарь неразложимых сочетаний, clause-boundary model и запрет на автоправку без высокого confidence.
+  examples:
+    valid:
+    - Приходи когда хочешь.
+    invalid:
+    - Приходи, когда хочешь.
+- id: ru.punctuation.repeated_conjunction_homogeneous
+  title: Запятая при повторяющихся союзах в однородном ряду
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_punctuation
+  - rozental_online
+  explanation: Однородные члены с повторяющимися союзами обычно разделяются запятыми, кроме цельных сочетаний.
+  requires:
+  - tokenization
+  - syntax
+  tags:
+  - lorugec
+  - punctuation
+  - syntax-heavy
+  detector:
+    kind: manual
+    note: Нужны границы однородного ряда, тип союза и фильтр фразеологизмов.
+  examples:
+    valid:
+    - Он купил и хлеб, и молоко.
+    invalid:
+    - Он купил и хлеб и молоко.
+- id: ru.punctuation.homogeneous_paired_units
+  title: Однородный член с тесной парой однородных компонентов
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: info
+  source_refs:
+  - lorugec_dataset
+  - gramota_punctuation
+  explanation: Не все внутренние пары в составе однородного ряда требуют дополнительной запятой.
+  requires:
+  - tokenization
+  - syntax
+  - semantics
+  tags:
+  - lorugec
+  - punctuation
+  - syntax-heavy
+  detector:
+    kind: manual
+    note: Нужна структура координации и распознавание общего зависимого компонента; поверхностная проверка союзов недостаточна.
+  examples:
+    valid:
+    - Мы изучали и старые книги и новые статьи, и архивы.
+    invalid:
+    - Мы изучали и старые книги, и новые статьи, и архивы.
+- id: ru.punctuation.homogeneous_subordinate_no_comma
+  title: Нет запятой между однородными придаточными с одиночным союзом
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_punctuation
+  explanation: Однородные придаточные, соединённые одиночным соединительным или разделительным союзом, обычно не разделяются
+    запятой.
+  requires:
+  - tokenization
+  - syntax
+  tags:
+  - lorugec
+  - punctuation
+  - syntax-heavy
+  detector:
+    kind: manual
+    note: Нужны границы придаточных, общий главный компонент и тип союза.
+  examples:
+    valid:
+    - Он понял, что поезд ушёл и что встреча сорвалась.
+    invalid:
+    - Он понял, что поезд ушёл, и что встреча сорвалась.
+- id: ru.punctuation.common_element_compound_no_comma
+  title: Нет запятой между частями сложного предложения при общем элементе
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_punctuation
+  - rozental_online
+  explanation: При общем второстепенном члене, вводном слове или общей придаточной части запятая перед и может не ставиться.
+  requires:
+  - tokenization
+  - syntax
+  - semantics
+  tags:
+  - lorugec
+  - punctuation
+  - syntax-heavy
+  detector:
+    kind: manual
+    note: Нужны синтаксические деревья обеих частей и проверка общего элемента; regex даст крайне шумный сигнал.
+  examples:
+    valid:
+    - К вечеру ветер стих и дождь прекратился.
+    invalid:
+    - К вечеру ветер стих, и дождь прекратился.
+- id: ru.punctuation.two_conjunction_junction
+  title: Запятая на стыке двух союзов
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_punctuation
+  - orthographia_ru
+  explanation: На стыке сочинительного и подчинительного союзов пунктуация зависит от структуры следующего придаточного.
+  requires:
+  - tokenization
+  - syntax
+  tags:
+  - lorugec
+  - punctuation
+  - syntax-heavy
+  detector:
+    kind: manual
+    note: Нужны вложенные clause boundaries и проверка второй части двойного союза то/так.
+  examples:
+    valid:
+    - Он сказал, что если будет дождь, встречу перенесут.
+    invalid:
+    - Он сказал, что, если будет дождь, встречу перенесут.
+- id: ru.punctuation.kak_introductory_turn
+  title: Как в вводных и сравнительных конструкциях
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_punctuation
+  explanation: Обороты с как могут обособляться как вводные, сравнительные или присоединительные, но не всегда.
+  requires:
+  - tokenization
+  - syntax
+  - semantics
+  - lexicon
+  tags:
+  - lorugec
+  - punctuation
+  - syntax-heavy
+  detector:
+    kind: manual
+    note: 'Нужна классификация оборота: сравнение, приложение, сказуемое, вводное сочетание или фразеологизм.'
+  examples:
+    valid:
+    - Он, как обычно, опоздал.
+    invalid:
+    - Он как обычно опоздал.

@@ -1,0 +1,208 @@
+version: 1
+rules:
+- id: ru.orthography.nn_adjectives_suffix_model
+  title: Н/нн в суффиксах имён прилагательных
+  domain: orthography
+  level: advanced
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  detector:
+    kind: manual
+    note: Нужны производящая основа, суффиксы -енн-, -онн-, -ан-, -ян-, -ин- и словарные исключения.
+  examples:
+    valid:
+    - деревянный
+    - ветреный
+    invalid:
+    - деревяный
+  requires:
+  - tokenization
+  - morphology
+  - word_formation
+  - lexicon
+  rule_family: word_formation
+  tags:
+  - n-nn
+  - adjective
+- id: ru.orthography.nn_participles_suffix_model
+  title: Н/нн в причастиях и отглагольных прилагательных
+  domain: orthography
+  level: expert
+  status: research
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  - russian_grammar_1980
+  detector:
+    kind: manual
+    note: Нужны вид глагола, приставка, зависимые слова, суффиксы причастий и различение прилагательного/причастия.
+  examples:
+    valid:
+    - решённая задача
+    - крашеный пол
+    invalid:
+    - решеная задача
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  - word_formation
+  rule_family: syntax_dependent
+  tags:
+  - n-nn
+  - participle
+- id: ru.orthography.participle_suffix_usch_yusch_ash_yash
+  title: Суффиксы действительных причастий настоящего времени
+  domain: orthography
+  level: advanced
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  - russian_grammar_1980
+  detector:
+    kind: manual
+    note: Нужна спряжённость производящего глагола и морфологический тип причастия.
+  examples:
+    valid:
+    - борющийся
+    - дышащий
+    invalid:
+    - борящийся
+  requires:
+  - tokenization
+  - morphology
+  - word_formation
+  rule_family: morphology_dependent
+  tags:
+  - participle
+  - suffix
+- id: ru.orthography.participle_suffix_em_im
+  title: Суффиксы страдательных причастий настоящего времени
+  domain: orthography
+  level: advanced
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  - russian_grammar_1980
+  detector:
+    kind: manual
+    note: 'Нужна модель спряжения: -ем- для первого, -им- для второго спряжения, плюс исключения.'
+  examples:
+    valid:
+    - решаемый
+    - видимый
+    invalid:
+    - видемый
+  requires:
+  - tokenization
+  - morphology
+  - word_formation
+  rule_family: morphology_dependent
+  tags:
+  - participle
+  - suffix
+- id: ru.orthography.verb_suffix_ova_eva_yva_iva
+  title: Суффиксы глаголов -ова-/-ева- и -ыва-/-ива-
+  domain: orthography
+  level: school
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  detector:
+    kind: manual
+    note: Нужна проверка формы 1-го лица единственного числа и словообразовательной основы.
+  examples:
+    valid:
+    - советовать
+    - рассказывать
+    invalid:
+    - советавать
+  requires:
+  - tokenization
+  - morphology
+  - word_formation
+  rule_family: morphology_dependent
+  tags:
+  - verb
+  - suffix
+- id: ru.orthography.noun_suffix_ek_ik
+  title: Суффиксы существительных -ек-/-ик-
+  domain: orthography
+  level: school
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  detector:
+    kind: manual
+    note: 'Нужна проверка выпадения гласной при склонении: замочек — замочка, ключик — ключика.'
+  examples:
+    valid:
+    - замочек
+    - ключик
+    invalid:
+    - замочик
+  requires:
+  - tokenization
+  - morphology
+  - word_formation
+  rule_family: morphology_dependent
+  tags:
+  - noun
+  - suffix
+- id: ru.orthography.noun_suffix_chik_shchik
+  title: Суффиксы -чик-/-щик-
+  domain: orthography
+  level: school
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  detector:
+    kind: manual
+    note: Нужна финальная согласная производящей основы и список исключений.
+  examples:
+    valid:
+    - переводчик
+    - каменщик
+    invalid:
+    - переводщик
+  requires:
+  - tokenization
+  - word_formation
+  - lexicon
+  rule_family: word_formation
+  tags:
+  - noun
+  - suffix
+- id: ru.orthography.endings_noun_case_seed
+  title: Падежные окончания существительных в частотных ошибках
+  domain: orthography
+  level: school
+  status: research
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  - ruscorpora_morph
+  detector:
+    kind: manual
+    note: Нужен словарь парадигм, падежное управление и вероятностный слой только как tie-breaker, не как основной судья.
+  examples:
+    valid:
+    - в течение недели
+    invalid:
+    - в течение неделию
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  - lexicon
+  - word_formation
+  tags:
+  - endings
+  - case

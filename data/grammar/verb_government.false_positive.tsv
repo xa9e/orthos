@@ -1,0 +1,9 @@
+# id	lemma	complement_kind	preposition	text	forbidden_excerpt	expected_blocker	reason
+direct_speech_direct	проверять	direct_object		"проверять проекту"	проверять проекту	DirectSpeechBoundary	direct speech island must not emit model-backed verb government diagnostics
+parenthetical_direct	проверять	direct_object		(проверять проекту)	проверять проекту	ParenthesisBoundary	parenthetical island must not emit model-backed verb government diagnostics
+comma_gap_direct	проверять	direct_object		проверять, проекту	проверять, проекту		punctuation gap is not a plain governor-dependent link
+direct_speech_prepositional	говорить	prepositional_object	о	"говорить о задачу"	говорить о задачу	DirectSpeechBoundary	direct speech island must not emit prepositional verb-government diagnostics
+parenthetical_prepositional	говорить	prepositional_object	о	(говорить о задачу)	говорить о задачу	ParenthesisBoundary	parenthetical island must not emit prepositional verb-government diagnostics
+comma_gap_prepositional	говорить	prepositional_object	о	говорить, о задачу	говорить, о задачу		punctuation gap between verb and preposition is not a plain governor-preposition link
+clause_marker_direct	проверять	direct_object		проверять что проекту	проверять что проекту	ClauseBoundary	unpunctuated subordinate marker must block direct verb-government links
+clause_marker_prepositional	говорить	prepositional_object	о	говорить о что задачу	говорить о что задачу	ClauseBoundary	unpunctuated subordinate marker must block prepositional verb-government links

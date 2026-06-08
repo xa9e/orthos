@@ -1,0 +1,13 @@
+<dictionary revision="fixture">
+  <lemmata>
+    <lemma id="1">
+      <l t="кот"><g v="NOUN"/><g v="anim"/><g v="masc"/></l>
+      <f t="кот"><g v="nomn"/><g v="sing"/></f>
+      <f t="кота"><g v="gent"/><g v="sing"/></f>
+    </lemma>
+    <lemma id="2">
+      <l t="новый"><g v="ADJF"/><g v="Qual"/></l>
+      <f t="новые"><g v="nomn"/><g v="plur"/><g v="FixUnknown"/></f>
+    </lemma>
+  </lemmata>
+</dictionary>

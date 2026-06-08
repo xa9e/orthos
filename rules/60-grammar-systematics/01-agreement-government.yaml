@@ -1,0 +1,256 @@
+version: 1
+rules:
+- id: ru.grammar.subject_predicate_agreement_number_full
+  title: Согласование подлежащего и сказуемого в числе
+  domain: grammar
+  level: intermediate
+  status: planned
+  severity: warning
+  source_refs:
+  - russian_grammar_1980
+  - ruscorpora_syntax
+  detector:
+    kind: manual
+    note: Нужны dependency-кандидаты subject-predicate, координация подлежащего и правила количественных групп.
+  examples:
+    valid:
+    - Студенты пришли.
+    invalid:
+    - Студенты пришёл.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  rule_family: syntax_dependent
+  tags:
+  - agreement
+  - predicate
+- id: ru.grammar.subject_predicate_agreement_gender_past
+  title: Согласование сказуемого прошедшего времени с подлежащим в роде
+  domain: grammar
+  level: intermediate
+  status: planned
+  severity: warning
+  source_refs:
+  - russian_grammar_1980
+  detector:
+    kind: manual
+    note: Нужны род подлежащего, форма прошедшего времени, неодушевлённые/одушевлённые существительные и пропуск подлежащего.
+  examples:
+    valid:
+    - Девочка пришла.
+    invalid:
+    - Девочка пришёл.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  rule_family: syntax_dependent
+  tags:
+  - agreement
+  - gender
+- id: ru.grammar.collective_noun_predicate_agreement
+  title: Сказуемое при собирательных и количественных подлежащих
+  domain: grammar
+  level: expert
+  status: research
+  severity: warning
+  source_refs:
+  - russian_grammar_1980
+  - ruscorpora_syntax
+  detector:
+    kind: manual
+    note: Нужны семантика группы, порядок слов, одушевлённость, согласование по смыслу и корпусные предпочтения.
+  examples:
+    valid:
+    - Большинство участников пришло.
+    invalid:
+    - Большинство участников пришли.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  - semantics
+  rule_family: syntax_dependent
+  tags:
+  - agreement
+  - quantity
+- id: ru.grammar.adjective_noun_agreement_full
+  title: Полное согласование прилагательного с существительным
+  domain: grammar
+  level: intermediate
+  status: planned
+  severity: warning
+  source_refs:
+  - russian_grammar_1980
+  - ruscorpora_morph
+  detector:
+    kind: manual
+    note: Нужны все падежи, числа, род, краткие формы, неоднозначность омонимичных окончаний и зависимые группы.
+  examples:
+    valid:
+    - красивая машина
+    invalid:
+    - красивый машина
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  rule_family: syntax_dependent
+  tags:
+  - agreement
+  - adjective
+- id: ru.grammar.participle_head_agreement_full
+  title: Согласование причастия с определяемым словом
+  domain: grammar
+  level: advanced
+  status: planned
+  severity: warning
+  source_refs:
+  - russian_grammar_1980
+  detector:
+    kind: manual
+    note: Нужна модель причастного оборота, определяемого слова и морфологических признаков причастия.
+  examples:
+    valid:
+    - книга, прочитанная вчера
+    invalid:
+    - книга, прочитанный вчера
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  rule_family: syntax_dependent
+  tags:
+  - agreement
+  - participle
+- id: ru.grammar.pronoun_antecedent_agreement
+  title: Согласование местоимения с антецедентом
+  domain: grammar
+  level: expert
+  status: research
+  severity: warning
+  source_refs:
+  - russian_grammar_1980
+  - ruscorpora_syntax
+  detector:
+    kind: manual
+    note: Требуется кореференция, род/число антецедента, дистанция и разрешение неоднозначности.
+  examples:
+    valid:
+    - Мария сказала, что она придёт.
+    invalid:
+    - Мария сказала, что он придёт.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  - semantics
+  rule_family: syntax_dependent
+  tags:
+  - agreement
+  - coreference
+- id: ru.grammar.preposition_government_polysemous_prepositions
+  title: Управление многозначных предлогов в, на, с, за, по
+  domain: grammar
+  level: expert
+  status: research
+  severity: warning
+  source_refs:
+  - russian_grammar_1980
+  - ruscorpora_syntax
+  detector:
+    kind: manual
+    note: 'Нужны семантические классы: направление/место, совместность/средство, причина/цель, срок/распределение.'
+  examples:
+    valid:
+    - идти в город
+    - жить в городе
+    invalid:
+    - жить в город
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  - semantics
+  rule_family: syntax_dependent
+  tags:
+  - government
+  - preposition
+- id: ru.grammar.verb_government_seed
+  title: Управление частотных глаголов
+  domain: grammar
+  level: advanced
+  status: planned
+  severity: warning
+  source_refs:
+  - russian_grammar_1980
+  - ruscorpora_syntax
+  detector:
+    kind: manual
+    note: 'Нужен лексикон валентностей: ждать кого/чего, управлять чем, достичь чего, оплатить что.'
+  examples:
+    valid:
+    - достичь цели
+    invalid:
+    - достичь цель
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  - lexicon
+  rule_family: syntax_dependent
+  tags:
+  - government
+  - verb-valency
+- id: ru.grammar.short_adjective_government
+  title: Управление кратких прилагательных
+  domain: grammar
+  level: expert
+  status: research
+  severity: warning
+  source_refs:
+  - russian_grammar_1980
+  detector:
+    kind: manual
+    note: 'Нужен лексикон кратких предикативов и их управления: рад чему, уверен в чём, доволен чем.'
+  examples:
+    valid:
+    - Он рад встрече.
+    invalid:
+    - Он рад встречу.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  - lexicon
+  rule_family: syntax_dependent
+  tags:
+  - government
+  - adjective
+- id: ru.grammar.numeral_government_full
+  title: Управление существительного количественным числительным
+  domain: grammar
+  level: advanced
+  status: planned
+  severity: warning
+  source_refs:
+  - russian_grammar_1980
+  - ruscorpora_morph
+  detector:
+    kind: manual
+    note: Нужны классы числительных, падеж всей группы, род для один/два и особые формы полтора/оба.
+  examples:
+    valid:
+    - два дома
+    - пять домов
+    invalid:
+    - пять дома
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  rule_family: morphology_dependent
+  tags:
+  - numeral
+  - government

@@ -1,0 +1,193 @@
+version: 1
+rules:
+- id: ru.grammar.adj_noun_agreement_demo
+  title: 'Согласование прилагательного и существительного: demo-lexicon'
+  domain: grammar
+  level: advanced
+  status: implemented
+  severity: warning
+  source_refs:
+  - ru_guard_mvp
+  - ruscorpora_morph
+  - opencorpora_dictionary
+  explanation: Демонстрационный morphology-backed detector сверяет род, число и падеж по tiny TSV-лексикону. Нужен
+    полный словарь и дизамбигуация.
+  requires:
+  - tokenization
+  - morphology
+  detector:
+    kind: adj_noun_agreement_demo
+    message: Прилагательное и существительное могут быть не согласованы.
+  examples:
+    valid:
+    - красивая машина
+    - красивый дом
+    invalid:
+    - красивый машина
+  confidence: low
+  false_positive_risk: high
+- id: ru.punctuation.introductory_phrase_comma_basic
+  title: Запятая после вводного слова в начале предложения
+  domain: punctuation
+  level: heuristic
+  status: implemented
+  severity: warning
+  source_refs:
+  - ru_guard_mvp
+  - gramota_punctuation
+  explanation: Эвристика работает только для начала предложения и не различает вводное слово и член предложения
+    во всех контекстах.
+  requires:
+  - tokenization
+  - sentence_boundaries
+  detector:
+    kind: introductory_phrase_comma
+    phrases:
+    - например
+    - конечно
+    - вероятно
+    - возможно
+    - во-первых
+    - во-вторых
+    - следовательно
+    - итак
+    - кстати
+    - по-видимому
+    - безусловно
+    message: После вводного слова или сочетания в начале предложения обычно нужна запятая.
+  examples:
+    valid:
+    - Конечно, это риск.
+    invalid:
+    - Конечно это риск.
+  confidence: medium
+  false_positive_risk: high
+- id: ru.grammar.preposition_government_basic
+  title: Базовое падежное управление предлогов
+  domain: grammar
+  level: school
+  status: implemented
+  severity: warning
+  source_refs:
+  - russian_grammar_1980
+  - gramota_lopatin_full
+  explanation: Морфологический seed-детектор строит отношение предлог → ближайшая именная форма и сверяет падеж
+    с небольшим нормативным инвентарём управления. Многословные группы, омонимия и вариантное управление пока
+    обрабатываются консервативно.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  detector:
+    kind: preposition_government_basic
+    message: "Возможна ошибка падежного управления: предлог требует другой падеж зависимого слова."
+  examples:
+    valid:
+    - Согласно приказу, встреча перенесена.
+    - Без дома ему было тяжело.
+    invalid:
+    - Согласно приказа, встреча перенесена.
+    - К дом пришёл курьер.
+  confidence: medium
+  false_positive_risk: medium
+- id: ru.grammar.preposition_case_phrase_seed
+  title: Фразовые маркеры падежного управления
+  domain: grammar
+  level: school
+  status: implemented
+  severity: warning
+  source_refs:
+  - rulang_mvp
+  - gramota_lopatin_full
+  explanation: 'Фразовый seed из rulang: полезен как быстрый baseline, но должен постепенно мигрировать в morphology/syntax-backed
+    government rules.'
+  requires:
+  - tokenization
+  - lexicon
+  - morphology
+  - syntax
+  detector:
+    kind: phrase_map
+    forms:
+    - по приезду=>по приезде
+    - по окончанию=>по окончании
+    - по завершению=>по завершении
+    - по истечению=>по истечении
+    - согласно приказа=>согласно приказу
+    - оплата за проезд=>оплата проезда
+    - оплата за обучение=>оплата обучения
+    - скучаю за тобой=>скучаю по тебе
+    message: Возможна ошибка падежного управления или ненормативная предложная конструкция.
+  examples:
+    valid:
+    - Согласно приказу, встреча перенесена.
+    invalid:
+    - Согласно приказа, встреча перенесена.
+  confidence: medium
+  false_positive_risk: medium
+- id: ru.grammar.numeral_phrase_seed
+  title: Фразовые маркеры согласования числительных
+  domain: grammar
+  level: school
+  status: implemented
+  severity: warning
+  source_refs:
+  - rulang_mvp
+  - gramota_lopatin_full
+  explanation: 'Seed-правило для известных фраз: оба/обе, полтора/полторы, собирательные числительные. Нужна полноценная
+    модель числительных.'
+  requires:
+  - tokenization
+  - lexicon
+  - morphology
+  detector:
+    kind: phrase_map
+    forms:
+    - оба стороны=>обе стороны
+    - оба девушки=>обе девушки
+    - обе мужчины=>оба мужчины
+    - полтора недели=>полторы недели
+    - полтора минуты=>полторы минуты
+    - полторы года=>полтора года
+    - двое девушек=>две девушки
+    - трое девушек=>три девушки
+    message: Возможна ошибка согласования числительного с существительным.
+  examples:
+    valid:
+    - Обе стороны согласились.
+    invalid:
+    - Оба стороны согласились.
+  confidence: medium
+  false_positive_risk: medium
+- id: ru.style.pleonasm_phrase_seed
+  title: Частотные плеоназмы
+  domain: style
+  level: school
+  status: implemented
+  severity: warning
+  source_refs:
+  - rulang_mvp
+  - editorial_style_general
+  explanation: Плеоназмы не всегда являются ошибкой, но часто ухудшают деловой и научный текст.
+  requires:
+  - tokenization
+  - lexicon
+  detector:
+    kind: phrase_map
+    forms:
+    - иметь место быть=>иметь место
+    - большая половина=>большая часть
+    - меньшая половина=>меньшая часть
+    - свободная вакансия=>вакансия
+    - главная суть=>суть
+    - прейскурант цен=>прейскурант
+    - памятный сувенир=>сувенир
+    - первый дебют=>дебют
+    message: 'Возможен плеоназм: сочетание выглядит избыточным.'
+  examples:
+    valid:
+    - Открылась вакансия.
+    invalid:
+    - Открылась свободная вакансия.
+  confidence: medium
+  false_positive_risk: high

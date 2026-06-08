@@ -1,0 +1,189 @@
+version: 1
+source_refs: []
+rules:
+- id: ru.orthography.ne_verbs_full
+  title: 'НЕ с глаголами: полная модель раздельного написания'
+  domain: orthography
+  level: school
+  status: planned
+  severity: error
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  - rozental_online
+  explanation: Отделить частицу не от личных форм, инфинитивов и деепричастий, кроме слов без формы без не.
+  requires:
+  - morphology
+  - syntax
+  - lexicon
+  tags:
+  - lorugec
+  - spelling
+  detector:
+    kind: manual
+    note: Нужны POS, лемма, список лексем без не и границы аналитических форм; regex-seed уже есть, но полной нормы не покрывает.
+  examples:
+    valid:
+    - Не знаю ответа.
+    invalid:
+    - Я незнаю ответа.
+- id: ru.orthography.ne_nouns_semantic
+  title: 'НЕ с существительными: слитно/раздельно по лексикализации и противопоставлению'
+  domain: orthography
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  - orthographia_ru
+  explanation: Различать слитное написание с новым понятием и раздельное отрицание с противопоставлением или усилителями.
+  requires:
+  - morphology
+  - syntax
+  - semantics
+  - lexicon
+  tags:
+  - lorugec
+  - spelling
+  detector:
+    kind: manual
+    note: 'Нужны словарь лексикализованных форм, синтаксис противопоставления и семантическая осторожность: не друг может
+      быть контекстно допустимо.'
+  examples:
+    valid:
+    - Это неправда, а ошибка.
+    invalid:
+    - Это не правда, а ошибка.
+- id: ru.orthography.ne_adjectives_context
+  title: 'НЕ с прилагательными: зависимые слова, противопоставление, степень признака'
+  domain: orthography
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  explanation: Определить, когда не образует новое качество, а когда остаётся отрицательной частицей.
+  requires:
+  - morphology
+  - syntax
+  - semantics
+  - lexicon
+  tags:
+  - lorugec
+  - spelling
+  detector:
+    kind: manual
+    note: Требуются краткая/полная форма, зависимые слова, союз а, усилители вовсе/далеко/отнюдь и словарь синонимов.
+  examples:
+    valid:
+    - Дом был невысокий.
+    invalid:
+    - Дом был не высокий, а низкий.
+- id: ru.orthography.ne_participles_dependent
+  title: НЕ с причастиями при зависимых словах и кратких формах
+  domain: orthography
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  explanation: Полные причастия с зависимыми словами и краткие причастия требуют отдельной логики от прилагательных.
+  requires:
+  - morphology
+  - syntax
+  tags:
+  - lorugec
+  - spelling
+  detector:
+    kind: manual
+    note: Нужны определение причастия, краткость, зависимые слова, противопоставление и лексикализация.
+  examples:
+    valid:
+    - Не прочитанная мной книга лежала на столе.
+    invalid:
+    - Непрочитанная мной книга лежала на столе.
+- id: ru.orthography.zato_za_to
+  title: 'Зато / за то: союз против местоимения с предлогом'
+  domain: orthography
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  - rozental_online
+  explanation: Отличать присоединительно-противительный союз зато от сочетания предлога за с местоимением то.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  - semantics
+  tags:
+  - lorugec
+  - spelling
+  detector:
+    kind: manual
+    note: Нужна проверка заменяемости союзом но и синтаксическая роль местоимения; простая подстановка ломается в разговорных
+      контекстах.
+  examples:
+    valid:
+    - Дорога крутая, зато красивая.
+    invalid:
+    - Дорога крутая, за то красивая.
+- id: ru.orthography.chtoby_chto_by
+  title: 'Чтобы / что бы: союз против местоимения с частицей'
+  domain: orthography
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  - rozental_online
+  explanation: Разграничить союз чтобы и свободное сочетание что бы, где бы можно переставить или опустить.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  - semantics
+  tags:
+  - lorugec
+  - spelling
+  detector:
+    kind: manual
+    note: Требуется анализ придаточного, роли что и позиции частицы бы; вопросительные контексты опасны для автоправки.
+  examples:
+    valid:
+    - Я пришёл, чтобы помочь.
+    invalid:
+    - Я пришёл, что бы помочь.
+- id: ru.orthography.takzhe_tak_zhe
+  title: 'Также / так же: союзное слово против наречия с частицей'
+  domain: orthography
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  - orthographia_ru
+  explanation: Отделить соединительный союз также от сравнительного так же.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  - semantics
+  tags:
+  - lorugec
+  - spelling
+  detector:
+    kind: manual
+    note: Нужны синтаксические связи и проверка коррелята как; локальные n-граммы дадут много ложных срабатываний.
+  examples:
+    valid:
+    - Он также участвовал.
+    invalid:
+    - Он так же участвовал.

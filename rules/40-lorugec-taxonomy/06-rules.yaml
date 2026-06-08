@@ -1,0 +1,188 @@
+version: 1
+source_refs: []
+rules:
+- id: ru.punctuation.kak_role_application_no_comma
+  title: 'Как в значении «в качестве»: приложение без обособления'
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_punctuation
+  explanation: Оборот с как в значении роли/функции обычно не обособляется как сравнение.
+  requires:
+  - tokenization
+  - syntax
+  - semantics
+  tags:
+  - lorugec
+  - punctuation
+  - syntax-heavy
+  detector:
+    kind: manual
+    note: Нужна семантическая классификация как-оборота; нельзя механически ставить запятую перед каждым как.
+  examples:
+    valid:
+    - Его пригласили как эксперта.
+    invalid:
+    - Его пригласили, как эксперта.
+- id: ru.punctuation.kak_predicative_no_comma
+  title: Как-оборот в составе сказуемого или приравнивания
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_punctuation
+  explanation: Если как-оборот входит в сказуемое или обозначает тождество, запятая часто не нужна.
+  requires:
+  - tokenization
+  - syntax
+  - semantics
+  tags:
+  - lorugec
+  - punctuation
+  - syntax-heavy
+  detector:
+    kind: manual
+    note: Нужен анализ предикативной группы и связки; false positives типичны в сравнительных предложениях.
+  examples:
+    valid:
+    - Город был как крепость.
+    invalid:
+    - Город был, как крепость.
+- id: ru.punctuation.introductory_words_full
+  title: Вводные слова и конструкции во всех позициях предложения
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_punctuation
+  explanation: Полная проверка вводных слов должна отличать вводность от роли члена предложения.
+  requires:
+  - tokenization
+  - sentence_boundaries
+  - syntax
+  - lexicon
+  - semantics
+  tags:
+  - lorugec
+  - punctuation
+  - syntax-heavy
+  detector:
+    kind: manual
+    note: Нужен lexicon вводных единиц, синтаксическая роль и позиционные правила после союзов.
+  examples:
+    valid:
+    - Это, вероятно, ошибка.
+    invalid:
+    - Это вероятно ошибка.
+- id: ru.punctuation.detached_definition_pronoun
+  title: Обособление согласованных определений при личном местоимении
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_punctuation
+  - rozental_online
+  explanation: Согласованные определения при личном местоимении обычно обособляются независимо от позиции.
+  requires:
+  - morphology
+  - syntax
+  tags:
+  - lorugec
+  - punctuation
+  - syntax-heavy
+  detector:
+    kind: manual
+    note: Нужны связь определения с местоимением, границы определения и различение обстоятельственных оборотов.
+  examples:
+    valid:
+    - Усталый, он сел у окна.
+    invalid:
+    - Усталый он сел у окна.
+- id: ru.punctuation.detached_definition_separated
+  title: Обособление определения, оторванного от определяемого слова
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_punctuation
+  - rozental_online
+  explanation: Определение, отделённое от определяемого слова другими членами предложения, часто обособляется.
+  requires:
+  - morphology
+  - syntax
+  tags:
+  - lorugec
+  - punctuation
+  - syntax-heavy
+  detector:
+    kind: manual
+    note: Нужны dependency links и linear-distance features; один порядок слов не является достаточным признаком.
+  examples:
+    valid:
+    - Книга лежала на столе, раскрытая на середине.
+    invalid:
+    - Книга лежала на столе раскрытая на середине.
+- id: ru.punctuation.adverbial_participle_after_conjunction
+  title: Обособление деепричастного оборота после союза
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_punctuation
+  - rozental_online
+  explanation: Деепричастный оборот после союза обычно отделяется от него запятой, если оборот можно переставить.
+  requires:
+  - morphology
+  - syntax
+  tags:
+  - lorugec
+  - punctuation
+  - syntax-heavy
+  detector:
+    kind: manual
+    note: Нужны POS-деепричастие, границы оборота и фильтр фразеологизированных сочетаний.
+  examples:
+    valid:
+    - Он остановился и, подумав, ответил.
+    invalid:
+    - Он остановился и подумав ответил.
+- id: ru.punctuation.dash_subject_predicate
+  title: Тире между подлежащим и сказуемым
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_punctuation
+  - orthographia_ru
+  explanation: Тире зависит от способа выражения подлежащего/сказуемого, связки, отрицания и частиц.
+  requires:
+  - morphology
+  - syntax
+  - semantics
+  tags:
+  - lorugec
+  - punctuation
+  - syntax-heavy
+  detector:
+    kind: manual
+    note: Нужны именная группа, инфинитивы, указательные слова это/вот, частица не и авторские варианты.
+  examples:
+    valid:
+    - Москва — столица России.
+    invalid:
+    - Москва столица России.

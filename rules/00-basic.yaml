@@ -1,0 +1,191 @@
+version: 1
+source_refs:
+- id: gramota_lopatin_full
+  title: В. В. Лопатин (ред.). Правила русской орфографии и пунктуации. Полный академический справочник
+  source_type: normative_reference
+  year: current online edition
+  authority: normative
+  license_note: Reference pointer only; rule prose and examples in this repository are project-authored paraphrases.
+  url: https://gramota.ru/biblioteka/spravochniki/pravila-russkoy-orfografii-i-punktuatsii
+  note: Используется как основной современный академический справочник; правила в корпусе формулируются кратко,
+    не копируются verbatim.
+- id: gramota_rules_1956
+  title: Правила русской орфографии и пунктуации (1956)
+  source_type: normative_reference
+  year: '1956'
+  authority: normative
+  license_note: Reference pointer only; no bulk text copied.
+  url: https://gramota.ru/biblioteka/spravochniki/pravila-russkoj-orfografii-i-punktuacii
+  note: Официальный свод, действующий как базовая нормативная основа; часть правил уточняется современной практикой.
+- id: gramota_punctuation
+  title: 'Грамота.ру: Справочник по пунктуации'
+  source_type: normative_reference
+  year: current online edition
+  authority: normative
+  license_note: Reference pointer only; punctuation labels are paraphrased.
+  url: https://gramota.ru/biblioteka/spravochniki/spravochnik-po-punktuatsii
+- id: ruscorpora_morph
+  title: 'НКРЯ: морфологический стандарт'
+  source_type: corpus_annotation_standard
+  year: current online edition
+  authority: corpus_derived
+  license_note: Used as an annotation-standard pointer, not as redistributed corpus data.
+  url: https://ruscorpora.ru/page/instruction-morph/
+- id: ruscorpora_syntax
+  title: 'НКРЯ: синтаксическая разметка'
+  source_type: corpus_annotation_standard
+  year: current online edition
+  authority: corpus_derived
+  license_note: Used as an annotation-standard pointer, not as redistributed treebank data.
+  url: https://ruscorpora.ru/page/instruction-syntax/
+- id: gramota_morphemics
+  title: 'Грамота.ру: Морфемика и словообразование'
+  source_type: online_reference
+  year: current online edition
+  authority: descriptive
+  license_note: Reference pointer only; morpheme lists and examples in this repository are project-authored seed data.
+  url: https://gramota.ru/biblioteka/spravochniki/russkij-yazyk-kratkij-teoreticheskij-kurs-dlya-shkolnikov/morfemika-i-slovoobrazovanie
+  note: Используется как базовый ориентир для терминов морфема, приставка, корень, суффикс, окончание и способов словообразования.
+- id: russian_grammar_1980
+  title: Русская грамматика. Том 1. АН СССР, Институт русского языка
+  source_type: normative_reference
+  year: '1980'
+  authority: normative
+  license_note: Reference pointer only; no bulk grammar text copied.
+  url: https://rusgram.narod.ru/
+  note: Долгосрочный источник для академического описания морфологии и словообразования; использовать через краткие проектные формализации.
+- id: ud_russian_syntagrus
+  title: Universal Dependencies Russian SynTagRus
+  source_type: corpus_annotation_standard
+  year: current online edition
+  authority: corpus_derived
+  license_note: Corpus pointer only; treebank data is not redistributed by this rule corpus.
+  url: https://universaldependencies.org/treebanks/ru_syntagrus/index.html
+  note: Human-corrected Russian dependency corpus with morphological and syntactic annotation; useful for future agreement and syntax benchmarks.
+rules:
+- id: ru.typography.multiple_spaces
+  title: Не более одного пробела внутри строки
+  domain: typography
+  level: basic
+  status: implemented
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  detector:
+    kind: multiple_spaces
+    message: 'Лишний пробел: внутри строки обычно нужен один пробел.'
+    replacement: ' '
+  examples:
+    valid:
+    - Это нормальный текст.
+    invalid:
+    - Это  текст с  лишними пробелами.
+  requires:
+  - regex
+  confidence: high
+  false_positive_risk: low
+- id: ru.punctuation.no_space_before_mark
+  title: Нет пробела перед запятой, точкой, двоеточием, точкой с запятой, вопросительным и восклицательным знаком
+  domain: punctuation
+  level: basic
+  status: implemented
+  severity: error
+  source_refs:
+  - gramota_lopatin_full
+  - gramota_rules_1956
+  detector:
+    kind: no_whitespace_before_punctuation
+    punctuation: ',.;:!?'
+    message: Перед этим знаком препинания пробел не ставится.
+  examples:
+    valid:
+    - Привет, мир!
+    invalid:
+    - Привет , мир !
+  requires:
+  - tokenization
+  confidence: high
+  false_positive_risk: low
+- id: ru.grammar.repeated_word
+  title: Случайный повтор соседнего слова
+  domain: grammar
+  level: basic
+  status: implemented
+  severity: warning
+  source_refs:
+  - editorial_style_general
+  detector:
+    kind: repeated_word
+    message: Похоже на случайный повтор слова.
+  examples:
+    valid:
+    - Это очень важный текст.
+    invalid:
+    - Это это очень важный текст.
+  requires:
+  - tokenization
+  confidence: medium
+  false_positive_risk: medium
+- id: ru.punctuation.sentence_terminal
+  title: Предложение обычно заканчивается знаком конца предложения
+  domain: punctuation
+  level: basic
+  status: implemented
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  detector:
+    kind: missing_sentence_terminal
+    message: Текст не заканчивается знаком конца предложения.
+    replacement: .
+  examples:
+    valid:
+    - Сегодня холодно.
+    invalid:
+    - Сегодня холодно
+  requires:
+  - sentence_boundaries
+  confidence: medium
+  false_positive_risk: medium
+- id: ru.orthography.sentence_initial_capital
+  title: Первое слово предложения пишется с прописной буквы
+  domain: orthography
+  level: basic
+  status: implemented
+  severity: warning
+  source_refs:
+  - gramota_rules_1956
+  - gramota_lopatin_full
+  detector:
+    kind: sentence_initial_lowercase
+    message: Первое слово предложения обычно пишется с прописной буквы.
+  examples:
+    valid:
+    - Дом построен. Сад посажен.
+    invalid:
+    - дом построен. сад посажен.
+  requires:
+  - sentence_boundaries
+  - tokenization
+  confidence: medium
+  false_positive_risk: medium
+- id: ru.punctuation.unbalanced_guillemets
+  title: Парность русских кавычек «ёлочки»
+  domain: punctuation
+  level: basic
+  status: implemented
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  detector:
+    kind: unbalanced_quotes
+    message: Кавычки выглядят непарными.
+  examples:
+    valid:
+    - 'Он сказал: «Пора».'
+    invalid:
+    - 'Он сказал: «Пора.'
+  requires:
+  - tokenization
+  confidence: high
+  false_positive_risk: low

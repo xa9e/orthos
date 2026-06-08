@@ -1,0 +1,266 @@
+version: 1
+rules:
+- id: ru.orthography.particle_to_libo_nibud_hyphen
+  title: Постфиксы -то, -либо, -нибудь пишутся через дефис с местоимениями и местоименными наречиями
+  domain: orthography
+  level: school
+  status: implemented
+  severity: error
+  source_refs:
+  - gramota_lopatin_full
+  - gramota_rules_1956
+  rationale: 'Это детектор с ограниченным списком основ: он ловит частотные случаи, но не пытается заменить полный
+    анализ местоименных слов.'
+  detector:
+    kind: clitic_hyphen_missing
+    group: indefinite_pronominal
+    message: В таких местоименных словах -то, -либо, -нибудь обычно пишутся через дефис.
+  examples:
+    valid:
+    - Кто-то пришёл.
+    - Где-нибудь встретимся.
+    invalid:
+    - Кто то пришёл.
+    - Где нибудь встретимся.
+  requires:
+  - tokenization
+  - word_formation
+  confidence: high
+  false_positive_risk: medium
+- id: ru.orthography.zhe_by_li_separate
+  title: Частицы же, бы, ли обычно пишутся отдельно
+  domain: orthography
+  level: school
+  status: implemented
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  detector:
+    kind: separate_particle_hyphenated
+    particles:
+    - же
+    - бы
+    - ли
+    message: Частицы же, бы, ли обычно пишутся отдельно, а не через дефис.
+  examples:
+    valid:
+    - Как же быть?
+    - Пришёл бы раньше.
+    invalid:
+    - Как-же быть?
+    - Пришёл-бы раньше?
+  requires:
+  - tokenization
+  - regex
+  confidence: high
+  false_positive_risk: medium
+- id: ru.orthography.ne_with_common_verbs
+  title: 'Не с глаголами: частотные слитные ошибки'
+  domain: orthography
+  level: school
+  status: implemented
+  severity: error
+  source_refs:
+  - gramota_lopatin_full
+  - gramota_rules_1956
+  rationale: >-
+    Проверка использует морфологический анализ: если после не получается известная глагольная форма,
+    а слитное слово не является лексикализованным исключением, предлагается раздельное написание.
+  explanation: Не с глаголами и деепричастиями обычно пишется раздельно; исключения составляют слова, которые без не не употребляются.
+  suggestion: Разделить частицу не и глагольную форму, если это не лексикализованное слово.
+  detector:
+    kind: negated_verb_spacing_basic
+    message: Похоже на ошибочное слитное написание не с глагольной формой.
+  examples:
+    valid:
+    - Не знаю, что делать.
+    - Он ненавидит пустые обещания.
+    invalid:
+    - Я незнаю, что делать.
+    - Он нехочет спорить.
+  requires:
+  - tokenization
+  - morphology
+  tags:
+  - не
+  - глагол
+  - morphology-backed-seed
+  confidence: high
+  false_positive_risk: low
+- id: ru.orthography.pol_hyphen_missing_basic
+  title: 'Пол- перед гласной, л и прописной буквой: дефисное написание'
+  domain: orthography
+  level: school
+  status: implemented
+  severity: error
+  source_refs:
+  - gramota_lopatin_full
+  - gramota_rules_1956
+  rationale: Стартовая word-formation seed-проверка ловит только раздельное написание `пол` перед очевидными дефисными случаями.
+  explanation: Перед гласной, буквой л и прописной буквой компонент пол- пишется через дефис.
+  suggestion: Заменить пробел после `пол` на дефис, если это не свободное сочетание со следующим определением.
+  requires:
+  - tokenization
+  - word_formation
+  tags:
+  - spelling
+  - word-formation
+  - surface-seed
+  rule_family: word_formation
+  confidence: high
+  false_positive_risk: medium
+  pattern:
+    kind: token_sequence
+    description: Отдельный токен `пол`, пробел без переноса строки, затем слово на гласную, л или прописную букву.
+    captures:
+    - prefix
+    - head
+  constraints:
+  - kind: derivation
+    description: Проверка относится к сложным словам с первым компонентом пол-.
+  exceptions:
+  - kind: token_context
+    description: Свободные сочетания типа `пол чайной ложки` не должны исправляться этим seed-детектором.
+  evidence:
+  - kind: normative_source
+    source_ref: gramota_lopatin_full
+  related_rules:
+  - ru.orthography.pol_compounds
+  implementation_notes: Детектор намеренно не чинит слитные ошибки вроде `поляблока` и не решает все случаи с полу-/пол-; это отдельная модель.
+  detector:
+    kind: pol_compound_hyphen_missing
+    message: В словах с пол- перед гласной, л или прописной буквой обычно нужен дефис.
+  examples:
+    valid:
+    - Пол-лимона осталось.
+    - Пол-яблока лежало на тарелке.
+    - Пол-Москвы стояло в пробках.
+    - Пол чайной ложки хватит.
+    invalid:
+    - Пол лимона осталось.
+    - Пол яблока лежало на тарелке.
+    - Пол Москвы стояло в пробках.
+- id: ru.orthography.tsya_tsya_basic
+  title: '-тся/-ться: базовая эвристика по вопросу ''что делать?'''
+  domain: orthography
+  level: school
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  detector:
+    kind: manual
+    note: 'Нужен морфологический анализ: инфинитив/личная форма, синтаксическая позиция, вспомогательные слова.'
+  examples:
+    valid:
+    - Он старается.
+    - Он будет стараться.
+    invalid:
+    - Он стараеться.
+    - Он будет старается.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+- id: ru.orthography.prefix_final_s_z
+  title: З/с на конце приставок перед глухими/звонкими согласными
+  domain: orthography
+  level: school
+  status: implemented
+  severity: error
+  source_refs:
+  - gramota_lopatin_full
+  - gramota_rules_1956
+  - gramota_morphemics
+  rationale: >-
+    Это первая проверка, которая использует словообразовательную модель: продуктивные приставки с парой з/с,
+    следующий согласный и seed-инвентарь корней, чтобы не чинить каждый похожий заимствованный корень.
+  explanation: >-
+    В приставках без-/бес-, воз-/вос-, из-/ис-, раз-/рас- и родственных вариантах конечная буква
+    обычно согласуется по звонкости/глухости со следующим звуком: перед глухими пишется с, перед звонкими и
+    гласными — з.
+  suggestion: Проверить приставку и заменить её на вариант с з или с по следующему звуку.
+  requires:
+  - tokenization
+  - word_formation
+  - lexicon
+  tags:
+  - spelling
+  - prefix-assimilation
+  - word-formation
+  rule_family: word_formation
+  confidence: medium
+  false_positive_risk: medium
+  pattern:
+    kind: word_formation
+    description: Слово начинается с продуктивной приставки из пары з/с, после которой идёт известная основа.
+    captures:
+    - prefix
+    - root_or_base
+  constraints:
+  - kind: derivation
+    description: Нужна граница приставки и корня/основы; похожие непроизводные корни должны отсекаться.
+  - kind: spelling_pattern
+    description: Звонкость/глухость следующей согласной задаёт вариант приставки.
+  evidence:
+  - kind: normative_source
+    source_ref: gramota_lopatin_full
+  - kind: morphology
+    source_ref: gramota_morphemics
+  implementation_notes: >-
+    Seed-детектор консервативен: он предлагает правку только когда остаток после приставки похож
+    на известную основу из морфемного inventory. Полный вариант потребует большого словаря корней и алломорфов.
+  detector:
+    kind: prefix_final_z_s_assimilation
+    message: В этой приставке, вероятно, нужен другой вариант з/с перед следующим звуком.
+  examples:
+    valid:
+    - рассказать
+    - разбить
+    - бессмертный
+    invalid:
+    - разсказать
+    - расбить
+    - безсмертный
+- id: ru.orthography.o_e_after_sibilants
+  title: О/е после шипящих и ц
+  domain: orthography
+  level: advanced
+  status: planned
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  - gramota_rules_1956
+  detector:
+    kind: manual
+    note: Нужны ударение, морфемика и словарные исключения.
+  examples:
+    valid:
+    - шёпот
+    - жёлтый
+    - шов
+    invalid: []
+  requires:
+  - tokenization
+  - morphology
+  - word_formation
+  - stress
+  - lexicon
+  rule_family: stress_dependent
+  confidence: low
+  false_positive_risk: high
+  pattern:
+    kind: word_formation
+    description: Sibilant/ц spelling depends on morpheme class and stress position.
+    captures:
+    - stem
+    - suffix_or_ending
+  constraints:
+  - kind: stress_requirement
+    description: Choice between о/е/ё often depends on stress.
+  - kind: derivation
+    description: Morpheme boundary and derivational class determine many exceptions.
+  evidence:
+  - kind: normative_source
+    source_ref: gramota_lopatin_full
+  implementation_notes: Do not implement with a bare regex; it needs stress dictionary, lexicon, and morphemic segmentation.

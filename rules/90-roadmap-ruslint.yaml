@@ -1,0 +1,151 @@
+version: 1
+rules:
+  - id: ru.orthography.prefix_final_s_z_roadmap
+    title: "З/с на конце приставок перед глухими и звонкими согласными"
+    domain: orthography
+    level: school
+    status: research
+    severity: warning
+    source_refs: [ruslint_mvp, gramota_lopatin_full]
+    requires: [morphology, word_formation]
+    detector:
+      kind: manual
+      note: "Нужны морфемный разбор, список приставок, исключения и словарная проверка. Regex-only даст мусор."
+    examples:
+      valid: ["рассказать", "разбить"]
+      invalid: ["разсказать", "расбить"]
+
+  - id: ru.orthography.i_y_after_prefix_roadmap
+    title: "И/ы после приставок на согласную"
+    domain: orthography
+    level: school
+    status: research
+    severity: warning
+    source_refs: [ruslint_mvp, gramota_lopatin_full]
+    requires: [morphology, word_formation]
+    detector:
+      kind: manual
+      note: "Нужны границы приставки и корня, список приставок-исключений вроде меж-, сверх-."
+    examples:
+      valid: ["разыграть", "сверхинтересный"]
+      invalid: ["разиграть"]
+
+  - id: ru.orthography.o_e_after_sibilants_roadmap
+    title: "О/ё/е после шипящих и ц"
+    domain: orthography
+    level: advanced
+    status: research
+    severity: warning
+    source_refs: [ruslint_mvp, gramota_lopatin_full]
+    requires: [morphology, word_formation, stress]
+    detector:
+      kind: manual
+      note: "Требуются ударение, морфемика, часть речи, исторические чередования и словарные исключения."
+    examples:
+      valid: ["шёпот", "жёлтый", "шов"]
+      invalid: []
+
+  - id: ru.orthography.nn_adjectives_participles_roadmap
+    title: "Н и НН в прилагательных и причастиях"
+    domain: orthography
+    level: advanced
+    status: research
+    severity: warning
+    source_refs: [ruslint_mvp, gramota_lopatin_full]
+    requires: [morphology, syntax, word_formation]
+    detector:
+      kind: manual
+      note: "Нужны вид глагола, приставки, зависимые слова, краткая/полная форма, суффиксы, исключения."
+    examples:
+      valid: ["крашеный пол", "покрашенный пол"]
+      invalid: []
+
+  - id: ru.orthography.ne_participles_roadmap
+    title: "НЕ с причастиями"
+    domain: orthography
+    level: advanced
+    status: research
+    severity: warning
+    source_refs: [ruslint_mvp, gramota_lopatin_full]
+    requires: [morphology, syntax]
+    detector:
+      kind: manual
+      note: "Требуются краткая/полная форма, зависимые слова, противопоставление, степень лексикализации."
+    examples:
+      valid: ["не прочитанная мной книга", "непрочитанная книга"]
+      invalid: []
+
+  - id: ru.grammar.case_government_dictionary_roadmap
+    title: "Словарь управления глаголов, предлогов и именных конструкций"
+    domain: grammar
+    level: advanced
+    status: research
+    severity: warning
+    source_refs: [ruslint_mvp, ruscorpora_morph, ruscorpora_syntax]
+    requires: [morphology, syntax, lexicon]
+    detector:
+      kind: manual
+      note: "Нужна typed government model: head lemma -> allowed complement cases/prepositions plus exceptions."
+    examples:
+      valid: ["управлять проектом", "ждать ответа"]
+      invalid: ["управлять проект", "ждать ответу"]
+
+  - id: ru.grammar.numeral_model_roadmap
+    title: "Полная модель числительных и количественных групп"
+    domain: grammar
+    level: advanced
+    status: research
+    severity: warning
+    source_refs: [ruslint_mvp, ruscorpora_morph]
+    requires: [morphology, syntax]
+    detector:
+      kind: manual
+      note: "Нужны правила 1, 2-4, 5+, составные, дробные, оба/обе, полтора/полторы, диапазоны."
+    examples:
+      valid: ["два стола", "пять столов", "двадцать один стол"]
+      invalid: ["два столов", "пять стола"]
+
+  - id: ru.punctuation.participle_clause_roadmap
+    title: "Обособление причастных оборотов"
+    domain: punctuation
+    level: advanced
+    status: research
+    severity: warning
+    source_refs: [ruslint_mvp, gramota_punctuation]
+    requires: [morphology, syntax]
+    detector:
+      kind: manual
+      note: "Нужны определяемое слово, позиция оборота, границы зависимых слов и исключения."
+    examples:
+      valid: ["Дом, построенный на холме, был виден издалека."]
+      invalid: ["Дом построенный на холме был виден издалека."]
+
+  - id: ru.punctuation.deeprichastie_clause_roadmap
+    title: "Обособление деепричастных оборотов"
+    domain: punctuation
+    level: advanced
+    status: research
+    severity: warning
+    source_refs: [ruslint_mvp, gramota_punctuation]
+    requires: [morphology, syntax]
+    detector:
+      kind: manual
+      note: "Нужна идентификация деепричастия, границ оборота и фразеологизированных исключений."
+    examples:
+      valid: ["Прочитав письмо, он замолчал."]
+      invalid: ["Прочитав письмо он замолчал."]
+
+  - id: ru.syntax.subject_predicate_agreement_roadmap
+    title: "Согласование подлежащего и сказуемого"
+    domain: grammar
+    level: advanced
+    status: research
+    severity: warning
+    source_refs: [ruslint_mvp, ruscorpora_morph, ruscorpora_syntax]
+    requires: [morphology, syntax]
+    detector:
+      kind: manual
+      note: "Нужны зависимости, координация, количественные группы, однородные подлежащие и именные сказуемые."
+    examples:
+      valid: ["Девочка пришла.", "Дети пришли."]
+      invalid: ["Девочка пришёл."]

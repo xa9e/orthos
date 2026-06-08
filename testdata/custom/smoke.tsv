@@ -1,0 +1,4 @@
+id	rule_id	bad	good	note
+smoke-001	ru.orthography.tsya_tsya_context_heuristic	Надо учится.	Надо учиться.	modal trigger
+smoke-002	ru.grammar.adj_noun_agreement_demo	красивый машина	красивая машина	demo lexicon only
+smoke-003	ru.style.pleonasm_phrase_seed	Открылась свободная вакансия.	Открылась вакансия.	phrase seed

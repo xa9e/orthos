@@ -1,0 +1,30 @@
+version: 1
+source_refs: []
+rules:
+- id: ru.style.pleonasm_lorugec
+  title: 'Плеоназмы: избыточное дублирование значения'
+  domain: style
+  level: school
+  status: planned
+  severity: info
+  source_refs:
+  - lorugec_dataset
+  - editorial_style_general
+  - rozental_online
+  explanation: Находить устойчивые избыточные сочетания, особенно в деловом и учебном тексте.
+  requires:
+  - tokenization
+  - lexicon
+  - semantics
+  tags:
+  - lorugec
+  - style
+  - semantics
+  detector:
+    kind: manual
+    note: Нужен curated phrase lexicon с severity по регистру; часть плеоназмов допустима как экспрессия.
+  examples:
+    valid:
+    - Это главная задача проекта.
+    invalid:
+    - Это главная суть проекта.

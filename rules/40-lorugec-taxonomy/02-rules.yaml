@@ -1,0 +1,193 @@
+version: 1
+source_refs: []
+rules:
+- id: ru.orthography.prichem_pritom
+  title: Причём, притом / при чём, при том
+  domain: orthography
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  - rozental_online
+  explanation: Различать присоединительные союзы причём/притом и предложно-местоименные сочетания.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  - semantics
+  tags:
+  - lorugec
+  - spelling
+  detector:
+    kind: manual
+    note: Нужны синтаксическая роль местоимения, вопросительные контексты и пунктуация вокруг присоединения.
+  examples:
+    valid:
+    - Опыт удался, причём впервые.
+    invalid:
+    - Опыт удался, при чём впервые.
+- id: ru.orthography.ottogo_ot_togo
+  title: 'Оттого / от того: причинный союз против предлога с местоимением'
+  domain: orthography
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  explanation: Проверять слитное написание причинного союзного слова и раздельное написание указательного местоимения с предлогом.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  - semantics
+  tags:
+  - lorugec
+  - spelling
+  detector:
+    kind: manual
+    note: Нужна синтаксическая роль группы от того и возможность замены на потому; устойчивые конструкции требуют исключений.
+  examples:
+    valid:
+    - Он замолчал оттого, что устал.
+    invalid:
+    - Он замолчал от того, что устал.
+- id: ru.orthography.pre_pri_prefixes
+  title: Приставки пре- и при- по значению и словарным исключениям
+  domain: orthography
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  - orthographia_ru
+  explanation: Пре- и при- зависят от значения приставки, степени слияния с корнем и словарных исключений.
+  requires:
+  - morphology
+  - word_formation
+  - semantics
+  - lexicon
+  tags:
+  - lorugec
+  - spelling
+  - word-formation
+  detector:
+    kind: manual
+    note: Нужны морфемный анализ, семантическая классификация приставки и словарь; regex по первым буквам бесполезен.
+  examples:
+    valid:
+    - Приоткрыть окно.
+    invalid:
+    - Преоткрыть окно.
+- id: ru.orthography.separating_hard_soft_sign
+  title: Разделительные Ъ и Ь после приставок, в корне и перед йотированными гласными
+  domain: orthography
+  level: school
+  status: planned
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  - orthographia_ru
+  explanation: Выбрать ъ/ь/нулевой знак по морфемной границе и типу основы.
+  requires:
+  - morphology
+  - word_formation
+  - lexicon
+  tags:
+  - lorugec
+  - spelling
+  - word-formation
+  detector:
+    kind: manual
+    note: Нужны границы приставки/корня, список сложных и иноязычных слов, словарь исключений.
+  examples:
+    valid:
+    - Подъезд был закрыт.
+    invalid:
+    - Подьезд был закрыт.
+- id: ru.orthography.pol_compounds
+  title: 'Пол- со словами: дефис, слитно, раздельно'
+  domain: orthography
+  level: school
+  status: planned
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  - rozental_online
+  explanation: Проверять написание пол- перед гласной, л, прописной буквой и в свободном сочетании половина.
+  requires:
+  - tokenization
+  - morphology
+  - word_formation
+  - lexicon
+  tags:
+  - lorugec
+  - spelling
+  - word-formation
+  detector:
+    kind: manual
+    note: Нужны начальная буква второй основы, имя собственное, родительный падеж и исключения типа поллитровка.
+  examples:
+    valid:
+    - Пол-лимона осталось.
+    invalid:
+    - Пол лимона осталось.
+- id: ru.orthography.i_y_after_prefix_full
+  title: 'Ы/И после приставок на согласную: полная word-formation модель'
+  domain: orthography
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  - rozental_online
+  explanation: После многих приставок на согласную корневое и переходит в ы, но есть классы исключений.
+  requires:
+  - morphology
+  - word_formation
+  - lexicon
+  tags:
+  - lorugec
+  - spelling
+  - word-formation
+  detector:
+    kind: manual
+    note: Нужны граница приставки, тип приставки, иноязычные элементы, сверх-/меж- и словарные исключения.
+  examples:
+    valid:
+    - Разыграть сцену.
+    invalid:
+    - Разиграть сцену.
+- id: ru.orthography.sibilant_root_o_yo_e
+  title: О/Ё/Е после шипящих в корне с учётом родственных форм
+  domain: orthography
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - lorugec_dataset
+  - gramota_lopatin_full
+  explanation: Выбор о/ё/е после шипящих часто зависит от ударения, морфемы и проверки родственным словом.
+  requires:
+  - morphology
+  - word_formation
+  - stress
+  - lexicon
+  tags:
+  - lorugec
+  - spelling
+  - word-formation
+  detector:
+    kind: manual
+    note: Нужны ударение, морфемика, родственные леммы и словарь исторических исключений.
+  examples:
+    valid:
+    - Шёпот был тихим.
+    invalid:
+    - Шопот был тихим.

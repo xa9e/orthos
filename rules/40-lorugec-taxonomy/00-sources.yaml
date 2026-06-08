@@ -1,0 +1,24 @@
+version: 1
+source_refs:
+- id: lorugec_dataset
+  title: 'LORuGEC: Linguistically Oriented Rule-annotated GEC dataset for Russian'
+  source_type: dataset_taxonomy
+  authority: corpus_derived
+  license_note: Taxonomy signal only; raw LORuGEC rows and examples are not redistributed.
+  url: https://github.com/ai-forever/LORuGEC
+  note: Inspected only for rule-label and taxonomy signals; raw dataset files are not redistributed in this project archive.
+- id: rozental_online
+  title: 'Д. Э. Розенталь: справочник по правописанию и стилистике, online edition'
+  source_type: online_reference
+  authority: normative
+  license_note: Navigation pointer only; rule formulations are paraphrased.
+  url: http://old-rozental.ru/
+  note: Used as a navigation/source pointer where LORuGEC rule labels cite Rozental pages; rule formulations here are paraphrased.
+- id: orthographia_ru
+  title: 'Правила русской орфографии и пунктуации: online reference at orthographia.ru'
+  source_type: online_reference
+  authority: normative
+  license_note: Navigation pointer only; rule formulations are paraphrased.
+  url: http://orthographia.ru/
+  note: Used for source-backed roadmap references; no long rule text is copied.
+rules: []

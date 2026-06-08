@@ -1,0 +1,291 @@
+version: 1
+rules:
+- id: ru.grammar.subject_predicate_agreement_basic
+  title: Согласование подлежащего и сказуемого в числе и роде
+  domain: grammar
+  level: school
+  status: implemented
+  severity: warning
+  source_refs:
+  - ruscorpora_morph
+  - ruscorpora_syntax
+  detector:
+    kind: subject_predicate_agreement_basic
+    message: Подлежащее и сказуемое могут быть не согласованы.
+  examples:
+    valid:
+    - Девочка пришла.
+    - Дети пришли.
+    invalid:
+    - Девочка пришёл.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  rule_family: syntax_dependent
+  confidence: low
+  false_positive_risk: high
+  pattern:
+    kind: dependency
+    description: Typed subject-predicate dependency with finite predicate morphology.
+    captures:
+    - subject
+    - predicate
+  constraints:
+  - kind: agreement
+    features:
+    - number
+    - gender
+    description: Predicate form must be compatible with subject number and, where applicable, gender.
+  - kind: coordination
+    description: Coordinated subjects change agreement target and default number.
+  evidence:
+  - kind: corpus_attestation
+    source_ref: ruscorpora_syntax
+  implementation_notes: Implemented as a conservative adjacent-token seed. It intentionally ignores coordination, inverted word order,
+    punctuation-separated clauses, quantitative subjects, and ambiguous morphology until dependency parsing is reliable.
+- id: ru.grammar.case_government_prepositions
+  title: Падежное управление предлогов
+  domain: grammar
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - ruscorpora_morph
+  detector:
+    kind: manual
+    note: 'Нужен морфологический анализ падежа и словарь управления: ''благодаря'' + дат., ''вопреки'' + дат., ''согласно''
+      + дат.'
+  examples:
+    valid:
+    - Согласно приказу, встреча перенесена.
+    invalid:
+    - Согласно приказа, встреча перенесена.
+  requires:
+  - morphology
+  - syntax
+  - lexicon
+- id: ru.grammar.numeral_noun_agreement
+  title: Базовое управление существительным после количественного числительного
+  domain: grammar
+  level: school
+  status: implemented
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  - russian_grammar_1980
+  - ruscorpora_morph
+  rationale: Seed-детектор реализует только соседние пары числительное + существительное с уверенной морфологией; составные, дробные и количественно-именные группы остаются planned.
+  explanation: В именительном контексте два, три, четыре требуют формы родительного единственного, а пять и далее — родительного множественного.
+  suggestion: Проверить число и падеж существительного после количественного числительного.
+  detector:
+    kind: numeral_noun_agreement_basic
+    message: Существительное после числительного может иметь неверный падеж или число.
+  examples:
+    valid:
+    - два дома
+    - пять домов
+    invalid:
+    - два дом
+    - пять дома
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  rule_family: syntax_dependent
+  confidence: low
+  false_positive_risk: high
+  pattern:
+    kind: token_sequence
+    description: Соседние токены `числительное + существительное` без переноса строки.
+    captures:
+    - numeral
+    - noun
+  constraints:
+  - kind: agreement
+    features:
+    - case
+    - number
+    description: Класс числительного задаёт ожидаемые падеж и число зависимого существительного.
+  - kind: token_context
+    description: Seed пока не разбирает составные числительные, дроби, диапазоны и вложенные определения.
+  evidence:
+  - kind: normative_source
+    source_ref: gramota_lopatin_full
+  - kind: corpus_attestation
+    source_ref: ruscorpora_morph
+  implementation_notes: Реализовано через QuantityAgreementCheck поверх numeral_government_class и numeral_noun_compatibility; правило молчит при неизвестной или неоднозначной морфологии.
+- id: ru.grammar.participle_agreement
+  title: Согласование причастия с определяемым словом
+  domain: grammar
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - ruscorpora_morph
+  - ruscorpora_syntax
+  detector:
+    kind: manual
+    note: Требуется синтаксическая связь определения и определяемого слова.
+  examples:
+    valid:
+    - книга, прочитанная вчера
+    invalid:
+    - книга, прочитанный вчера
+  requires:
+  - morphology
+  - syntax
+- id: ru.grammar.verb_government_basic
+  title: Базовое глагольное управление
+  domain: grammar
+  level: intermediate
+  status: implemented
+  severity: warning
+  source_refs:
+  - ruscorpora_morph
+  - ruscorpora_syntax
+  rationale: >-
+    Seed-слой GovernmentFrame теперь покрывает не только предлоги и числительные, но и краткий
+    словарь валентностей глагола. Это не полный dependency parser: правило работает только внутри
+    безопасного SyntacticIsland и молчит при недоказанном конфликте.
+  explanation: >-
+    Глагол может задавать падеж зависимого именного слова: например, `ждать` требует родительный,
+    `управлять` — творительный, а `говорить о` требует предложный падеж зависимого имени.
+  suggestion: Проверить падеж зависимого слова при глаголе.
+  detector:
+    kind: verb_government_basic
+    message: >-
+      Возможна ошибка глагольного управления: зависимое слово стоит не в ожидаемом падеже.
+  examples:
+    valid:
+    - ждать ответа
+    - управлять проектом
+    - говорить о задаче
+    - помогать проекту
+    invalid:
+    - управлять проект
+    - ждать ответу
+    - говорить о задачу
+    - помогать проектом
+  requires:
+  - tokenization
+  - lexicon
+  - morphology
+  - syntax
+  rule_family: syntax_dependent
+  confidence: low
+  false_positive_risk: high
+  pattern:
+    kind: dependency
+    description: Кандидат `глагол -> именная группа` или `глагол -> предлог -> именная группа` в пределах безопасного синтаксического острова.
+    captures:
+    - verb
+    - nominal_head
+  constraints:
+  - kind: government
+    features:
+    - case
+    description: Головное слово зависимой именной группы должно иметь падеж, заданный seed-валентностью глагола.
+  implementation_notes: Реализовано через GovernmentFrameKind::Verb и DiagnosticProof; seed-лексикон хранится в data/grammar/verb_government.seed.tsv и разделяет direct_object/prepositional_object.
+- id: ru.grammar.preposition_nominal_group_government_basic
+  title: Управление предлога в короткой именной группе
+  domain: grammar
+  level: school
+  status: implemented
+  severity: warning
+  source_refs:
+  - russian_grammar_1980
+  - gramota_lopatin_full
+  - ruscorpora_syntax
+  rationale: >-
+    Это следующий шаг после соседнего отношения `предлог + слово`: детектор проверяет голову короткой группы
+    `предлог + определение + существительное`, но не пытается строить полный dependency parse.
+  explanation: Предлог задаёт падеж зависимой именной группы; падеж должен проверяться по головному существительному,
+    а не только по ближайшему определению.
+  suggestion: Проверить падеж головного существительного в группе после предлога.
+  detector:
+    kind: preposition_nominal_group_government_basic
+    message: Возможна ошибка падежного управления в короткой именной группе после предлога.
+  examples:
+    valid:
+    - Согласно новому приказу, встреча перенесена.
+    invalid:
+    - Согласно новому приказа, встреча перенесена.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  rule_family: syntax_dependent
+  confidence: low
+  false_positive_risk: high
+  pattern:
+    kind: dependency
+    description: Кандидат `предлог -> головное существительное` через одно–три определения без пунктуации и переноса строки.
+    captures:
+    - preposition
+    - modifier
+    - nominal_head
+  constraints:
+  - kind: government
+    features:
+    - case
+    description: Головное слово именной группы должно иметь падеж, разрешённый моделью управления предлога.
+  - kind: token_context
+    description: Seed покрывает группы с одним–тремя определениями и молчит при неизвестной или неоднозначной морфологии.
+  evidence:
+  - kind: normative_source
+    source_ref: gramota_lopatin_full
+  - kind: corpus_attestation
+    source_ref: ruscorpora_syntax
+  implementation_notes: Реализовано через SyntaxRelationKind::PrepositionNominalGroup и существующий GovernmentCheck; модификаторы пока хранятся в NominalGroupCandidate, но не получают полноценные dependency-роли.
+- id: ru.grammar.numeral_nominal_group_agreement_basic
+  title: Управление существительным в короткой количественно-именной группе
+  domain: grammar
+  level: school
+  status: implemented
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  - russian_grammar_1980
+  - ruscorpora_morph
+  rationale: >-
+    Старый seed проверял только соседние пары `числительное + существительное`; этот инкремент вводит
+    короткий кандидат `числительное + одно–три определения + существительное`, чтобы не терять базовые именные группы.
+  explanation: В именительном контексте количественное числительное задаёт форму головного существительного даже при наличии определения между ними.
+  suggestion: Проверить падеж и число головного существительного после числительного.
+  detector:
+    kind: numeral_nominal_group_agreement_basic
+    message: Существительное в количественно-именной группе может иметь неверный падеж или число.
+  examples:
+    valid:
+    - Два новых дома стояли рядом.
+    invalid:
+    - Два новых дом стояли рядом.
+  requires:
+  - tokenization
+  - morphology
+  - syntax
+  rule_family: syntax_dependent
+  confidence: low
+  false_positive_risk: high
+  pattern:
+    kind: dependency
+    description: Кандидат `числительное -> головное существительное` через одно–три определения без пунктуации и переноса строки.
+    captures:
+    - numeral
+    - modifier
+    - nominal_head
+  constraints:
+  - kind: agreement
+    features:
+    - case
+    - number
+    description: Класс числительного задаёт ожидаемые падеж и число головного существительного.
+  - kind: token_context
+    description: Seed не покрывает составные числительные, дроби, диапазоны и облические количественные группы.
+  evidence:
+  - kind: normative_source
+    source_ref: gramota_lopatin_full
+  - kind: corpus_attestation
+    source_ref: ruscorpora_morph
+  implementation_notes: Реализовано через SyntaxRelationKind::NumeralNominalGroup и QuantityAgreementCheck; модификаторы вынесены в NominalGroupCandidate, отдельное правило проверяет не-ближайшие определения.

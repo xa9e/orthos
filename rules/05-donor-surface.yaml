@@ -1,0 +1,238 @@
+version: 1
+source_refs:
+- id: ru_guard_mvp
+  title: ru-guard MVP donor corpus
+  source_type: donor_project
+  authority: project_internal
+  license_note: Local donor signal only; detector texts are rewritten and raw donor files are not vendored.
+  note: Used as local donor material for detector ideas, examples and demo morphology; rule texts are rewritten.
+- id: ruslint_mvp
+  title: ruslint MVP donor corpus
+  source_type: donor_project
+  authority: project_internal
+  license_note: Local roadmap signal only; raw donor files are not vendored.
+  note: Used as local donor material for roadmap categories and simple rule inventory.
+- id: rulang_mvp
+  title: rulang MVP donor corpus
+  source_type: donor_project
+  authority: project_internal
+  license_note: Local phrase-rule signal only; raw donor files are not vendored.
+  note: Used as local donor material for phrase-level lexical rules and CheckRule-style architecture ideas.
+- id: opencorpora_dictionary
+  title: OpenCorpora dictionary
+  source_type: dictionary
+  authority: descriptive
+  license_note: Candidate external lexicon pointer; dictionary payload is not redistributed in this corpus.
+  url: https://opencorpora.org/
+  note: Candidate source for future full morphology; the current repo only ships a tiny demo TSV lexicon.
+- id: editorial_style_general
+  title: 'Редакторская практика: технические и стилистические нормы набора'
+  source_type: editorial_practice
+  authority: project_internal
+  license_note: Internal umbrella source; validate against benchmarks before broad normative claims.
+  note: Internal umbrella source for low-risk typography checks that need corpus validation before claiming normative
+    depth.
+rules:
+- id: ru.punctuation.missing_space_after_mark
+  title: Пробел после запятой, точки, двоеточия, точки с запятой, вопросительного и восклицательного знака
+  domain: punctuation
+  level: basic
+  status: implemented
+  severity: error
+  source_refs:
+  - ru_guard_mvp
+  - gramota_lopatin_full
+  explanation: После знака препинания следующее слово обычно отделяется пробелом; десятичные дроби и часть аббревиатур
+    отсекаются эвристикой.
+  suggestion: Добавить пробел после знака, если это не специальная запись.
+  requires:
+  - tokenization
+  detector:
+    kind: missing_whitespace_after_punctuation
+    message: После этого знака препинания обычно нужен пробел.
+  examples:
+    valid:
+    - Привет, мир.
+    - Версия 1.2 работает.
+    invalid:
+    - Привет,мир.
+  confidence: high
+  false_positive_risk: low
+- id: ru.punctuation.unpaired_delimiters
+  title: Парность скобок и кавычек
+  domain: punctuation
+  level: basic
+  status: implemented
+  severity: error
+  source_refs:
+  - ru_guard_mvp
+  - gramota_lopatin_full
+  explanation: Проверяет только поверхностную стековую парность (), [], {}, «». Вложенность кавычек разных типов
+    пока не моделируется.
+  requires:
+  - tokenization
+  detector:
+    kind: unpaired_delimiters
+    pairs:
+    - ()
+    - '[]'
+    - '{}'
+    - «»
+    message: Скобка или кавычка не имеет корректной пары.
+  examples:
+    valid:
+    - 'Он сказал: «Пора (правда)».'
+    invalid:
+    - 'Он сказал: «Пора (правда».'
+  confidence: high
+  false_positive_risk: low
+- id: ru.typography.space_after_opening_punctuation
+  title: Нет пробела после открывающей скобки или кавычки
+  domain: typography
+  level: basic
+  status: implemented
+  severity: error
+  source_refs:
+  - ru_guard_mvp
+  - editorial_style_general
+  requires:
+  - tokenization
+  detector:
+    kind: space_after_opening_punctuation
+    message: После открывающей скобки или кавычки пробел обычно не нужен.
+  examples:
+    valid:
+    - «Привет»
+    - (текст)
+    invalid:
+    - « привет»
+  confidence: high
+  false_positive_risk: low
+- id: ru.typography.space_before_closing_quote
+  title: Нет пробела перед закрывающей кавычкой
+  domain: typography
+  level: basic
+  status: implemented
+  severity: error
+  source_refs:
+  - ru_guard_mvp
+  - editorial_style_general
+  requires:
+  - tokenization
+  detector:
+    kind: space_before_closing_quote
+    message: Перед закрывающей кавычкой пробел обычно не нужен.
+  examples:
+    valid:
+    - «Привет»
+    invalid:
+    - «Привет »
+  confidence: high
+  false_positive_risk: low
+- id: ru.typography.hyphen_instead_of_dash
+  title: Дефис вместо тире между пробелами
+  domain: typography
+  level: basic
+  status: implemented
+  severity: warning
+  source_refs:
+  - ru_guard_mvp
+  - editorial_style_general
+  requires:
+  - tokenization
+  detector:
+    kind: hyphen_instead_of_dash
+    message: Между пробелами обычно используется тире, а не дефис.
+  examples:
+    valid:
+    - Москва — столица.
+    invalid:
+    - Москва - столица.
+  confidence: medium
+  false_positive_risk: medium
+- id: ru.typography.dash_spacing
+  title: Пробелы вокруг внутрипредложенческого тире
+  domain: typography
+  level: basic
+  status: implemented
+  severity: warning
+  source_refs:
+  - ru_guard_mvp
+  - editorial_style_general
+  requires:
+  - tokenization
+  detector:
+    kind: dash_spacing
+    message: Тире в предложении обычно отделяется пробелами.
+  examples:
+    valid:
+    - Москва — столица.
+    invalid:
+    - Москва—столица.
+  confidence: medium
+  false_positive_risk: medium
+- id: ru.style.multiple_question_exclamation_marks
+  title: Повтор вопросительных или восклицательных знаков
+  domain: style
+  level: basic
+  status: implemented
+  severity: warning
+  source_refs:
+  - ru_guard_mvp
+  - editorial_style_general
+  requires:
+  - tokenization
+  detector:
+    kind: multiple_punctuation
+    message: Повтор знаков вопроса или восклицания стилистически маркирован.
+  examples:
+    valid:
+    - Что?
+    invalid:
+    - Что??
+  confidence: medium
+  false_positive_risk: medium
+- id: ru.typography.number_unit_spacing
+  title: Пробел между числом и единицей измерения
+  domain: typography
+  level: basic
+  status: implemented
+  severity: warning
+  source_refs:
+  - ru_guard_mvp
+  - editorial_style_general
+  requires:
+  - tokenization
+  detector:
+    kind: number_unit_spacing
+    units:
+    - кг
+    - г
+    - мг
+    - т
+    - м
+    - см
+    - мм
+    - км
+    - л
+    - мл
+    - с
+    - мин
+    - ч
+    - кб
+    - мб
+    - гб
+    - вт
+    - квт
+    - в
+    - а
+    - ом
+    - процентов
+    message: Между числом и единицей измерения обычно нужен пробел.
+  examples:
+    valid:
+    - 10 кг
+    invalid:
+    - 10кг
+  confidence: high
+  false_positive_risk: medium

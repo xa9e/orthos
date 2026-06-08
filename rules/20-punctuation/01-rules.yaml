@@ -1,0 +1,176 @@
+version: 1
+source_refs: []
+rules:
+- id: ru.punctuation.comma_before_subordinator_basic
+  title: 'Запятая перед частотными подчинительными союзами: что, чтобы, если, когда, потому что'
+  domain: punctuation
+  level: heuristic
+  status: implemented
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  - gramota_punctuation
+  rationale: 'Эвристика. В реальном движке требуется синтаксический парсер: союз может входить в устойчивый оборот, сравнительную
+    конструкцию, вопросительное местоимение и т. п.'
+  detector:
+    kind: missing_comma_before_subordinator
+    markers:
+    - что
+    - чтобы
+    - если
+    - когда
+    - пока
+    - потому что
+    - поскольку
+    - хотя
+    - который
+    - которая
+    - которое
+    - которые
+    message: Возможна пропущенная запятая перед придаточной частью.
+  examples:
+    valid:
+    - Я знаю, что он придёт.
+    - Если он придёт, мы уйдём.
+    - Он ушёл, потому что устал.
+    - 'Он спросил: «что делать дальше?»'
+    - Пометка (если возможно) останется.
+    - А что он сказал?
+    invalid:
+    - Я знаю что он придёт.
+    - Я уйду если начнётся дождь.
+    - Он ушёл потому что устал.
+  requires:
+  - tokenization
+  - syntax
+  rule_family: syntax_dependent
+  confidence: medium
+  false_positive_risk: high
+  pattern:
+    kind: punctuation_context
+    description: Candidate subordinator preceded by a non-comma token inside one sentence.
+    captures:
+    - left_context
+    - subordinator
+  constraints:
+  - kind: clause_boundary
+    description: The subordinator should introduce a dependent clause, not a question word or lexical complement.
+  exceptions:
+  - kind: direct_speech
+    description: Quoted questions and direct speech can contain the same marker without parent-clause comma.
+  - kind: parenthetical_expression
+    description: Parenthesized conditions are deliberately skipped by the current heuristic.
+  evidence:
+  - kind: normative_source
+    source_ref: gramota_punctuation
+  implementation_notes: This remains a heuristic until clause-boundary detection is parser-backed.
+- id: ru.punctuation.double_comma
+  title: Две запятые подряд
+  domain: punctuation
+  level: basic
+  status: implemented
+  severity: error
+  source_refs:
+  - editorial_style_general
+  detector:
+    kind: regex
+    pattern: ',\s*,'
+    message: Две запятые подряд почти всегда являются опечаткой.
+    replacement: ','
+  examples:
+    valid:
+    - Да, конечно.
+    invalid:
+    - Да,, конечно.
+  requires:
+  - regex
+  confidence: high
+  false_positive_risk: low
+- id: ru.punctuation.comma_between_homogeneous_members
+  title: Запятая между однородными членами без одиночного соединительного союза
+  domain: punctuation
+  level: school
+  status: implemented
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  - gramota_punctuation
+  detector:
+    kind: coordination_comma_basic
+    message: Возможно, между однородными определениями нужна запятая.
+  examples:
+    valid:
+    - быстрый, точный анализатор
+    - умный и надёжный инструмент
+    invalid:
+    - быстрый точный анализатор
+    - умный надёжный инструмент
+  requires:
+  - tokenization
+  - syntax
+  confidence: low
+  false_positive_risk: high
+  tags:
+  - coordination
+  - punctuation-slot
+  - strict-only
+- id: ru.punctuation.introductory_words
+  title: Вводные слова и сочетания обычно обособляются
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  - gramota_punctuation
+  detector:
+    kind: manual
+    note: 'Нужна лексико-синтаксическая дизамбигуация: ''кажется'' может быть сказуемым или вводным словом.'
+  examples:
+    valid:
+    - Кажется, дождь начинается.
+    - Он кажется уставшим.
+    invalid:
+    - Кажется дождь начинается.
+  requires:
+  - tokenization
+  - syntax
+  - lexicon
+- id: ru.punctuation.participle_clause_after_noun
+  title: Причастный оборот после определяемого слова обособляется
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  detector:
+    kind: manual
+    note: Нужны морфология, синтаксические зависимости и границы оборота.
+  examples:
+    valid:
+    - Дом, построенный на холме, был виден издалека.
+    invalid:
+    - Дом построенный на холме был виден издалека.
+  requires:
+  - morphology
+  - syntax
+- id: ru.punctuation.deeprichastie_clause
+  title: Деепричастные обороты обычно обособляются
+  domain: punctuation
+  level: advanced
+  status: research
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  detector:
+    kind: manual
+    note: Нужна морфологическая идентификация деепричастий и границ оборота; есть фразеологизированные исключения.
+  examples:
+    valid:
+    - Прочитав письмо, он замолчал.
+    invalid:
+    - Прочитав письмо он замолчал.
+  requires:
+  - morphology
+  - syntax

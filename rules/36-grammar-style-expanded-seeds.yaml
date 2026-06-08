@@ -1,0 +1,125 @@
+version: 1
+rules:
+- id: ru.grammar.after_event_po_case_seed
+  title: По приезде, по прибытии, по окончании в значении после события
+  domain: grammar
+  level: intermediate
+  status: implemented
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  - russian_grammar_1980
+  rationale: Seed-правило фиксирует частотные обстоятельственные сочетания; полная модель должна различать значение после события и другие употребления по.
+  explanation: В значении после завершения события нормативны сочетания типа по приезде, по прибытии, по окончании.
+  suggestion: Заменить предложно-падежную форму на устойчивую форму со значением после события.
+  detector:
+    kind: phrase_map
+    forms:
+    - по приезду=>по приезде
+    - по прибытию=>по прибытии
+    - по возвращению=>по возвращении
+    - по окончанию=>по окончании
+    - по завершению=>по завершении
+    message: В значении после события обычно требуется другая падежная форма.
+  examples:
+    valid:
+    - По приезде он сразу позвонил.
+    - По окончании встречи протокол отправили участникам.
+    invalid:
+    - По приезду он сразу позвонил.
+    - По окончанию встречи протокол отправили участникам.
+  requires:
+  - tokenization
+  - lexicon
+  - syntax
+  - morphology
+  tags:
+  - government
+  - preposition
+  - phrase-map
+  - seed
+  confidence: medium
+  false_positive_risk: medium
+- id: ru.grammar.expanded_preposition_government_phrase_seed
+  title: Частотные ошибки управления у производных предлогов
+  domain: grammar
+  level: school
+  status: implemented
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  - russian_grammar_1980
+  rationale: Это временный словарный слой поверх общей модели управления; он нужен для частотных форм, пока лексикон мал.
+  explanation: 'Некоторые производные предлоги требуют определённого падежа зависимого слова: согласно и вопреки — дательного, ввиду и вследствие — родительного.'
+  suggestion: Проверить падеж зависимого слова после производного предлога.
+  detector:
+    kind: phrase_map
+    forms:
+    - согласно договора=>согласно договору
+    - согласно приказа=>согласно приказу
+    - вопреки прогноза=>вопреки прогнозу
+    - вопреки ожидания=>вопреки ожиданию
+    - благодаря этого=>благодаря этому
+    - ввиду этого обстоятельство=>ввиду этого обстоятельства
+    - вследствие этого обстоятельство=>вследствие этого обстоятельства
+    message: Похоже на ошибку падежного управления при производном предлоге.
+  examples:
+    valid:
+    - Согласно договору, поставка переносится.
+    - Вопреки прогнозу, дождя не было.
+    invalid:
+    - Согласно договора, поставка переносится.
+    - Вопреки прогноза, дождя не было.
+  requires:
+  - tokenization
+  - lexicon
+  - syntax
+  - morphology
+  - word_formation
+  tags:
+  - government
+  - derivative-preposition
+  - phrase-map
+  - seed
+  confidence: medium
+  false_positive_risk: medium
+- id: ru.style.expanded_pleonasm_phrase_seed
+  title: Расширенный seed частотных плеоназмов
+  domain: style
+  level: intermediate
+  status: implemented
+  severity: info
+  source_refs:
+  - editorial_style_general
+  rationale: Стилистический seed не является строгой грамматической ошибкой; он помогает редакторскому профилю находить избыточные сочетания.
+  explanation: В плеоназме одно слово повторяет смысл другого, поэтому сочетание часто можно сократить без потери смысла.
+  suggestion: Убрать лишний компонент или заменить сочетание более точной формулировкой.
+  detector:
+    kind: phrase_map
+    forms:
+    - главная суть=>суть
+    - основная суть=>суть
+    - памятный сувенир=>сувенир
+    - внутренний интерьер=>интерьер
+    - первый дебют=>дебют
+    - свободная вакансия=>вакансия
+    - предварительный анонс=>анонс
+    - конечный итог=>итог
+    message: 'Похоже на плеоназм: один компонент повторяет значение другого.'
+  examples:
+    valid:
+    - Суть проблемы стала ясна.
+    - В музее обновили интерьер.
+    invalid:
+    - Главная суть проблемы стала ясна.
+    - В музее обновили внутренний интерьер.
+  requires:
+  - tokenization
+  - lexicon
+  - syntax
+  tags:
+  - style
+  - pleonasm
+  - phrase-map
+  confidence: medium
+  false_positive_risk: high

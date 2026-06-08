@@ -1,0 +1,35 @@
+kind	form	tags	productivity	note
+prefix	без	z_s_pair|negation_or_absence	productive	Alternates with бес- before voiceless consonants.
+prefix	бес	z_s_pair|negation_or_absence	productive	Alternates with без- before voiced consonants and vowels.
+prefix	воз	z_s_pair|renewal_or_upward	productive	Alternates with вос-.
+prefix	вос	z_s_pair|renewal_or_upward	productive	Alternates with воз-.
+prefix	из	z_s_pair|outward	productive	Alternates with ис-.
+prefix	ис	z_s_pair|outward	productive	Alternates with из-.
+prefix	раз	z_s_pair|separation_or_intensity	productive	Alternates with рас-.
+prefix	рас	z_s_pair|separation_or_intensity	productive	Alternates with раз-.
+prefix	пере	productive	productive	General productive prefix seed.
+prefix	при	productive	productive	General productive prefix seed.
+prefix	по	productive	productive	General productive prefix seed.
+root	сказ	verb_root	limited	Seed root for сказать/рассказать family.
+root	би	verb_root	limited	Seed root for бить/разбить family.
+root	пис	verb_root	limited	Seed root for писать/писатель family.
+root	чит	verb_root	limited	Seed root for читать family.
+root	уч	verb_root	limited	Seed root for учить/учитель family.
+root	смерт	noun_root	limited	Seed root for смерть/бессмертный family.
+root	дом	noun_root	limited	Seed noun root.
+root	город	noun_root	limited	Seed noun root.
+root	вод	noun_or_verb_root	limited	Seed alternating family root.
+derivational_suffix	тель	actor_noun	productive	Actor noun suffix seed.
+derivational_suffix	ник	actor_or_object_noun	productive	Nominal suffix seed.
+derivational_suffix	ниц	feminine_noun	productive	Feminine noun suffix seed.
+derivational_suffix	ск	relative_adjective	productive	Relative adjective suffix seed.
+derivational_suffix	н	adjective	productive	Adjective suffix seed.
+derivational_suffix	ость	abstract_noun	productive	Abstract noun suffix seed.
+derivational_suffix	а	verb_theme	productive	Verb theme vowel seed.
+derivational_suffix	ть	infinitive	productive	Infinitive suffix seed.
+ending	ый	adjective|gender=masc|case=nom	productive	Adjective ending seed.
+ending	ая	adjective_or_noun|gender=fem|case=nom	productive	Feminine ending seed.
+ending	а	noun_or_verb_form	productive	Common ending seed.
+ending	и	number=plur_or_case	productive	Common ending seed.
+interfix	о	compound_interfix	productive	Compound interfix seed.
+postfix	ся	reflexive	productive	Reflexive postfix seed.
