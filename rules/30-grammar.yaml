@@ -9,6 +9,8 @@ rules:
   source_refs:
   - ruscorpora_morph
   - ruscorpora_syntax
+  explanation: Сказуемое обычно согласуется с подлежащим в числе; в прошедшем времени единственного числа также согласуется в роде.
+  suggestion: Проверить форму сказуемого и согласовать её с подлежащим.
   detector:
     kind: subject_predicate_agreement_basic
     message: Подлежащее и сказуемое могут быть не согласованы.

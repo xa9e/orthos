@@ -17,6 +17,9 @@ pub enum DisambiguationConstraint {
     /// A reading is kept only if it agrees with at least one reading of a
     /// reliable adjacent modifier/head partner.
     ModifierHeadAgreement,
+    /// A reading is kept only if it participates in a compatible adjacent
+    /// subject-predicate pair licensed by the local context.
+    SubjectPredicateAgreement,
 }
 
 impl DisambiguationConstraint {
@@ -25,6 +28,7 @@ impl DisambiguationConstraint {
             Self::PrepositionCaseGovernment => "preposition_case_government",
             Self::PrepositionVerbExclusion => "preposition_verb_exclusion",
             Self::ModifierHeadAgreement => "modifier_head_agreement",
+            Self::SubjectPredicateAgreement => "subject_predicate_agreement",
         }
     }
 }

@@ -92,6 +92,65 @@ mod disambiguation_tests {
     }
 
     #[test]
+    fn subject_predicate_context_prunes_non_predicate_reading() {
+        let tsv = "девочка\tдевочка\tNOUN\tgender=fem|number=sing|case=nom|animacy=anim\n\
+             стала\tстать\tVERB\tgender=fem|number=sing|tense=past|verb_form=finite\n\
+             стала\tсталь\tNOUN\tgender=fem|number=sing|case=gen|animacy=inan\n";
+        let (readings, trace) = run("девочка стала", tsv);
+
+        assert_eq!(readings[2].len(), 1);
+        assert_eq!(readings[2][0].pos, PartOfSpeech::Verb);
+        assert!(trace.eliminations.iter().any(|e| {
+            e.constraint == DisambiguationConstraint::SubjectPredicateAgreement
+                && e.token_index == 2
+                && e.evidence_form == "девочка"
+                && e.eliminated_lemma == "сталь"
+        }));
+    }
+
+    #[test]
+    fn subject_predicate_context_prunes_incompatible_predicate_reading() {
+        let tsv = "девочка\tдевочка\tNOUN\tgender=fem|number=sing|case=nom|animacy=anim\n\
+             пришла\tприйти\tVERB\tgender=fem|number=sing|tense=past|verb_form=finite\n\
+             пришла\tприйти\tVERB\tgender=masc|number=sing|tense=past|verb_form=finite\n";
+        let (readings, trace) = run("девочка пришла", tsv);
+
+        assert_eq!(readings[2].len(), 1);
+        assert_eq!(readings[2][0].features.gender, Some(crate::morph::Gender::Feminine));
+        assert!(trace.eliminations.iter().any(|e| {
+            e.constraint == DisambiguationConstraint::SubjectPredicateAgreement
+                && e.eliminated_features.contains("gender=masc")
+        }));
+    }
+
+    #[test]
+    fn real_subject_predicate_error_is_not_pruned_away() {
+        let tsv = "девочка\tдевочка\tNOUN\tgender=fem|number=sing|case=nom|animacy=anim\n\
+             пришёл\tприйти\tVERB\tgender=masc|number=sing|tense=past|verb_form=finite\n";
+        let (readings, trace) = run("девочка пришёл", tsv);
+
+        assert!(trace.is_empty(), "no compatible pair exists, detector must see the error");
+        assert_eq!(readings[0].len(), 1);
+        assert_eq!(readings[2].len(), 1);
+    }
+
+    #[test]
+    fn subject_predicate_context_does_not_prune_inside_numeral_group() {
+        let tsv = "два\tдва\tNUM\tnumber=plur|case=nom\n\
+             новых\tновый\tADJ\tnumber=plur|case=gen|adj_form=full\n\
+             дома\tдом\tNOUN\tgender=masc|number=sing|case=gen|animacy=inan\n\
+             дома\tдом\tNOUN\tgender=masc|number=plur|case=nom|animacy=inan\n\
+             стояли\tстоять\tVERB\tnumber=plur|tense=past|verb_form=finite\n";
+        let (readings, trace) = run("два новых дома стояли", tsv);
+
+        assert_eq!(readings[4].len(), 2, "numeral-governed head remains ambiguous");
+        assert!(!trace
+            .eliminations
+            .iter()
+            .any(|e| e.constraint == DisambiguationConstraint::SubjectPredicateAgreement));
+    }
+
+    #[test]
     fn last_reading_is_never_removed() {
         let tsv = "у\tу\tPREP\tcase=genitive\n\
              москва\tмосква\tNOUN\tgender=fem|number=sing|case=nom|animacy=inan\n";

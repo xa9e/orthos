@@ -50,6 +50,8 @@ fn case_government_frame<'a>(
         span: Span::new(tokens[governor_index].span.start, group.span.end),
         expected_cases,
         observed_cases,
+        expected_numbers: Vec::new(),
+        observed_numbers: Vec::new(),
         compatibility,
         confidence: confidence_for_case_frame(&blockers),
         blockers,

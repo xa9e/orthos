@@ -23,6 +23,7 @@ use std::path::PathBuf;
 const DEFAULT_GUARDED_RULES: &[&str] = &[
     "ru.grammar.adj_noun_agreement_demo",
     "ru.grammar.nominal_group_modifier_agreement_basic",
+    "ru.grammar.subject_predicate_agreement_basic",
     "ru.grammar.preposition_nominal_group_government_basic",
 ];
 

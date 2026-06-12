@@ -177,16 +177,16 @@ fn detects_prefix_final_z_s_assimilation() {
 fn detects_basic_preposition_government() {
     let issues = checker()
         .check_with_options(
-            "Согласно приказа, встреча перенесена. К дому пришёл курьер.",
+            "К дом пришёл курьер. К дому пришёл курьер.",
             &strict_options(),
         )
         .unwrap()
         .issues;
-    assert!(
-        issues
-            .iter()
-            .any(|i| i.rule_id == "ru.grammar.preposition_government_basic")
-    );
+    let issue = issues
+        .iter()
+        .find(|i| i.rule_id == "ru.grammar.preposition_government_basic")
+        .expect("preposition government issue");
+    assert_eq!(issue.replacement.as_deref(), Some("К дому"));
 }
 
 #[test]
@@ -195,9 +195,37 @@ fn detects_basic_subject_predicate_agreement() {
         .check_with_options("Девочка пришёл. Дети пришли.", &strict_options())
         .unwrap()
         .issues;
+    let issue = issues
+        .iter()
+        .find(|i| i.rule_id == "ru.grammar.subject_predicate_agreement_basic")
+        .expect("subject-predicate agreement issue");
+    assert_eq!(issue.replacement.as_deref(), Some("Девочка пришла"));
     assert!(
-        issues
-            .iter()
-            .any(|i| i.rule_id == "ru.grammar.subject_predicate_agreement_basic")
+        issue
+            .suggestion
+            .as_deref()
+            .is_some_and(|text| text.contains("сказуемого"))
+    );
+}
+
+#[test]
+fn detects_basic_verb_government_with_replacement() {
+    let issues = checker()
+        .check_with_options(
+            "Ждать ответу нельзя. Ждать ответа можно.",
+            &strict_options(),
+        )
+        .unwrap()
+        .issues;
+    let issue = issues
+        .iter()
+        .find(|i| i.rule_id == "ru.grammar.verb_government_basic")
+        .expect("verb government issue");
+    assert_eq!(issue.replacement.as_deref(), Some("Ждать ответа"));
+    assert!(
+        issue
+            .suggestion
+            .as_deref()
+            .is_some_and(|text| text.contains("глаголе"))
     );
 }

@@ -9,11 +9,11 @@ fn detects_basic_numeral_noun_agreement() {
         )
         .unwrap()
         .issues;
-    assert!(
-        issues
-            .iter()
-            .any(|i| i.rule_id == "ru.grammar.numeral_noun_agreement")
-    );
+    let issue = issues
+        .iter()
+        .find(|i| i.rule_id == "ru.grammar.numeral_noun_agreement")
+        .expect("numeral-noun agreement issue");
+    assert_eq!(issue.replacement.as_deref(), Some("Два дома"));
 }
 
 #[test]
@@ -74,10 +74,16 @@ fn detects_short_nominal_group_government_and_quantity() {
             .iter()
             .any(|i| i.rule_id == "ru.grammar.preposition_nominal_group_government_basic")
     );
+    let quantity = issues
+        .iter()
+        .find(|i| i.rule_id == "ru.grammar.numeral_nominal_group_agreement_basic")
+        .expect("numeral nominal group agreement issue");
+    assert_eq!(quantity.replacement.as_deref(), Some("Два новых дома"));
     assert!(
-        issues
+        !issues
             .iter()
-            .any(|i| i.rule_id == "ru.grammar.numeral_nominal_group_agreement_basic")
+            .any(|i| i.rule_id == "ru.grammar.adj_noun_agreement_demo"),
+        "quantity error should not be duplicated by adjacent demo agreement"
     );
 }
 
@@ -87,10 +93,16 @@ fn detects_non_adjacent_modifier_agreement_in_nominal_group() {
         .check_with_options("Новый важному приказу присвоили номер.", &strict_options())
         .unwrap()
         .issues;
+    let issue = issues
+        .iter()
+        .find(|i| i.rule_id == "ru.grammar.nominal_group_modifier_agreement_basic")
+        .expect("nominal group modifier agreement issue");
+    assert_eq!(issue.replacement.as_deref(), Some("Новому важному приказу"));
     assert!(
-        issues
+        !issues
             .iter()
-            .any(|i| i.rule_id == "ru.grammar.nominal_group_modifier_agreement_basic")
+            .any(|i| i.rule_id == "ru.grammar.adj_noun_agreement_demo"),
+        "non-adjacent nominal-group error should not be duplicated by adjacent demo rule"
     );
 }
 
@@ -103,10 +115,13 @@ fn detects_compound_numeral_nominal_group_agreement() {
         )
         .unwrap()
         .issues;
-    assert!(
-        issues
-            .iter()
-            .any(|i| { i.rule_id == "ru.grammar.compound_numeral_nominal_group_agreement_basic" })
+    let issue = issues
+        .iter()
+        .find(|i| i.rule_id == "ru.grammar.compound_numeral_nominal_group_agreement_basic")
+        .expect("compound numeral nominal group agreement issue");
+    assert_eq!(
+        issue.replacement.as_deref(),
+        Some("Двадцать два новых дома")
     );
 }
 
@@ -119,7 +134,12 @@ fn detects_typed_compound_numeral_component_agreement() {
         )
         .unwrap()
         .issues;
-    assert!(issues.iter().any(|i| {
-        i.rule_id == "ru.grammar.typed_compound_numeral_nominal_group_agreement_basic"
-    }));
+    let issue = issues
+        .iter()
+        .find(|i| i.rule_id == "ru.grammar.typed_compound_numeral_nominal_group_agreement_basic")
+        .expect("typed compound numeral nominal group agreement issue");
+    assert_eq!(
+        issue.replacement.as_deref(),
+        Some("Сто двадцать два новых дома")
+    );
 }

@@ -128,12 +128,13 @@ mod tests {
     #[test]
     fn detects_basic_preposition_government() {
         let r = rule(Detector::PrepositionGovernmentBasic { message: "x".into() });
-        let text = "согласно приказа";
+        let text = "к дом";
         let morph = MorphLexicon::demo();
         let analysis = AnalysisContext::new(text, &morph);
         let issues = run_detector(&r, &ctx(&analysis)).unwrap();
 
         assert_eq!(issues.len(), 1);
+        assert_eq!(issues[0].replacement.as_deref(), Some("к дому"));
     }
 
     #[test]
@@ -149,7 +150,27 @@ mod tests {
             issues[0].proof.as_ref().map(|proof| proof.kind),
             Some(DiagnosticProofKind::GovernmentConflict)
         );
+        assert_eq!(
+            issues[0].replacement.as_deref(),
+            Some("согласно новому приказу")
+        );
         assert!(analysis.summary().fact_store_cached);
+    }
+
+    #[test]
+    fn numeral_noun_detector_suggests_case_and_number_replacement() {
+        let r = rule(Detector::NumeralNounAgreementBasic { message: "x".into() });
+        let morph = MorphLexicon::demo();
+
+        let paucal = AnalysisContext::new("два дом", &morph);
+        let paucal_issues = run_detector(&r, &ctx(&paucal)).unwrap();
+        assert_eq!(paucal_issues.len(), 1);
+        assert_eq!(paucal_issues[0].replacement.as_deref(), Some("два дома"));
+
+        let many = AnalysisContext::new("пять дом", &morph);
+        let many_issues = run_detector(&r, &ctx(&many)).unwrap();
+        assert_eq!(many_issues.len(), 1);
+        assert_eq!(many_issues[0].replacement.as_deref(), Some("пять домов"));
     }
 
     #[test]
@@ -181,6 +202,44 @@ mod tests {
             issues[0].proof.as_ref().map(|proof| proof.kind),
             Some(DiagnosticProofKind::AgreementConflict)
         );
+    }
+
+    #[test]
+    fn modifier_head_detector_suggests_verified_modifier_replacement() {
+        let r = rule(Detector::NominalGroupModifierAgreementBasic { message: "x".into() });
+        let text = "Новый важному приказу";
+        let morph = MorphLexicon::demo();
+        let observed = morph.analyze("Новый").pop().expect("observed modifier");
+        let target = ExpectedModifierForm {
+            case: crate::morph::Case::Dative,
+            number: crate::morph::Number::Singular,
+            gender: Some(crate::morph::Gender::Masculine),
+        };
+        assert!(morph
+            .analyses_for_lemma("новый")
+            .iter()
+            .any(|candidate| analysis_matches_modifier_target(candidate, &observed, target)));
+        let analysis = AnalysisContext::new(text, &morph);
+        let issues = run_detector(&r, &ctx(&analysis)).unwrap();
+
+        assert_eq!(issues.len(), 1);
+        assert_eq!(issues[0].replacement.as_deref(), Some("Новому важному приказу"));
+    }
+
+    #[test]
+    fn subject_predicate_detector_suggests_verified_past_tense_replacement() {
+        let r = rule(Detector::SubjectPredicateAgreementBasic { message: "x".into() });
+        let text = "Девочка пришёл";
+        let morph = MorphLexicon::demo();
+        let analysis = AnalysisContext::new(text, &morph);
+        let issues = run_detector(&r, &ctx(&analysis)).unwrap();
+
+        assert_eq!(issues.len(), 1);
+        assert_eq!(
+            issues[0].proof.as_ref().map(|proof| proof.kind),
+            Some(DiagnosticProofKind::AgreementConflict)
+        );
+        assert_eq!(issues[0].replacement.as_deref(), Some("Девочка пришла"));
     }
 
 

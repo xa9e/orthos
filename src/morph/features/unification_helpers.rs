@@ -112,6 +112,7 @@ fn can_unify_as_nominal_modifier(analysis: &MorphAnalysis) -> bool {
 
 fn can_be_unified_subject(analysis: &MorphAnalysis) -> bool {
     matches!(analysis.pos, PartOfSpeech::Noun | PartOfSpeech::Pronoun | PartOfSpeech::Numeral)
+        && !matches!(analysis.features.case, Some(case) if case != Case::Nominative)
 }
 
 fn can_be_unified_predicate(analysis: &MorphAnalysis) -> bool {

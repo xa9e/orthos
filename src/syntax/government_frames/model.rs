@@ -43,6 +43,8 @@ pub struct GovernmentFrame<'a> {
     pub span: Span,
     pub expected_cases: Vec<crate::morph::Case>,
     pub observed_cases: Vec<crate::morph::Case>,
+    pub expected_numbers: Vec<crate::morph::Number>,
+    pub observed_numbers: Vec<crate::morph::Number>,
     pub compatibility: crate::morph::MorphCompatibility,
     pub confidence: SyntaxConfidence,
     pub blockers: Vec<SuppressionReason>,
@@ -122,6 +124,8 @@ fn government_frame_from_relation_without_islands<'a>(
         span: relation.span,
         expected_cases: expected_cases_for_constraint(&relation.constraint),
         observed_cases: observed_cases_for_constraint(&relation.constraint),
+        expected_numbers: expected_numbers_for_constraint(&relation.constraint),
+        observed_numbers: observed_numbers_for_constraint(&relation.constraint),
         compatibility: relation.constraint.compatibility(),
         confidence: relation.confidence,
         blockers: relation.blockers.iter().copied().map(SuppressionReason::from).collect(),
@@ -171,6 +175,38 @@ fn observed_cases_for_constraint(
     cases
 }
 
+fn expected_numbers_for_constraint(
+    constraint: &MorphosyntacticConstraint,
+) -> Vec<crate::morph::Number> {
+    let mut numbers = match constraint {
+        MorphosyntacticConstraint::Quantity(check) => check
+            .conflict
+            .as_ref()
+            .map(|conflict| expected_numbers_for_numeral_class(conflict.numeral_class))
+            .unwrap_or_default(),
+        _ => Vec::new(),
+    };
+    numbers.sort_unstable();
+    numbers.dedup();
+    numbers
+}
+
+fn observed_numbers_for_constraint(
+    constraint: &MorphosyntacticConstraint,
+) -> Vec<crate::morph::Number> {
+    let mut numbers = match constraint {
+        MorphosyntacticConstraint::Quantity(check) => check
+            .conflict
+            .as_ref()
+            .map(|conflict| conflict.observed_numbers.iter().copied().collect())
+            .unwrap_or_default(),
+        _ => Vec::new(),
+    };
+    numbers.sort_unstable();
+    numbers.dedup();
+    numbers
+}
+
 fn expected_cases_for_numeral_class(
     class: crate::morph::NumeralGovernmentClass,
 ) -> Vec<crate::morph::Case> {
@@ -179,6 +215,19 @@ fn expected_cases_for_numeral_class(
         crate::morph::NumeralGovernmentClass::Paucal
         | crate::morph::NumeralGovernmentClass::Many
         | crate::morph::NumeralGovernmentClass::Collective => vec![crate::morph::Case::Genitive],
+        crate::morph::NumeralGovernmentClass::Ordinal
+        | crate::morph::NumeralGovernmentClass::Unknown => Vec::new(),
+    }
+}
+
+fn expected_numbers_for_numeral_class(
+    class: crate::morph::NumeralGovernmentClass,
+) -> Vec<crate::morph::Number> {
+    match class {
+        crate::morph::NumeralGovernmentClass::One => vec![crate::morph::Number::Singular],
+        crate::morph::NumeralGovernmentClass::Paucal => vec![crate::morph::Number::Singular],
+        crate::morph::NumeralGovernmentClass::Many
+        | crate::morph::NumeralGovernmentClass::Collective => vec![crate::morph::Number::Plural],
         crate::morph::NumeralGovernmentClass::Ordinal
         | crate::morph::NumeralGovernmentClass::Unknown => Vec::new(),
     }
@@ -233,6 +282,7 @@ fn dedup_government_frames(frames: &mut Vec<GovernmentFrame<'_>>) {
             frame.span.start,
             frame.span.end,
             frame.expected_cases.clone(),
+            frame.expected_numbers.clone(),
         ))
     });
 }

@@ -84,13 +84,13 @@ fn parse_verb_government_false_positive_line(
     let text = required_column(line_number, columns[4], "text")?;
     let forbidden_excerpt = required_column(line_number, columns[5], "forbidden_excerpt")?;
     let expected_blocker = optional_column(columns[6]);
-    if let Some(blocker) = expected_blocker.as_deref() {
-        if !is_known_false_positive_blocker(blocker) {
-            return Err(VerbGovernmentSeedError::new(
-                line_number,
-                format!("unknown expected_blocker {blocker:?}"),
-            ));
-        }
+    if let Some(blocker) = expected_blocker.as_deref()
+        && !is_known_false_positive_blocker(blocker)
+    {
+        return Err(VerbGovernmentSeedError::new(
+            line_number,
+            format!("unknown expected_blocker {blocker:?}"),
+        ));
     }
     let reason = required_column(line_number, columns[7], "reason")?;
 

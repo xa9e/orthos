@@ -28,6 +28,7 @@ pub fn disambiguate_readings(
         trace.passes += 1;
         apply_preposition_constraints(tokens, readings, prepositions, &mut trace);
         apply_modifier_head_agreement(tokens, readings, &mut trace);
+        apply_subject_predicate_agreement(tokens, readings, &mut trace);
         if trace.eliminations.len() == before {
             break;
         }
@@ -172,6 +173,81 @@ fn apply_modifier_head_agreement(
     }
 }
 
+/// Prunes local subject-predicate ambiguities after a compatible pair is
+/// already licensed by the context. If all predicate readings conflict, the
+/// probable grammar error remains visible to detectors.
+fn apply_subject_predicate_agreement(
+    tokens: &[Token<'_>],
+    readings: &mut [Vec<crate::morph::MorphAnalysis>],
+    trace: &mut DisambiguationTrace,
+) {
+    for subject_idx in 0..tokens.len() {
+        if tokens[subject_idx].kind != TokenKind::Word {
+            continue;
+        }
+        if previous_adjacent_word_index(tokens, subject_idx).is_some() {
+            continue;
+        }
+        let Some(predicate_idx) = adjacent_word_index(tokens, subject_idx) else {
+            continue;
+        };
+
+        let subject_reliable = is_reliable_subject(&readings[subject_idx]);
+        let predicate_reliable = is_reliable_predicate(&readings[predicate_idx]);
+        if !subject_reliable && !predicate_reliable {
+            continue;
+        }
+
+        let has_compatible_pair = readings[subject_idx].iter().any(|subject| {
+            is_subject_reading(subject)
+                && readings[predicate_idx].iter().any(|predicate| {
+                    is_predicate_reading(predicate)
+                        && subject_predicate_pair_is_compatible(subject, predicate)
+                })
+        });
+        if !has_compatible_pair {
+            continue;
+        }
+
+        if subject_reliable {
+            let subject_readings = readings[subject_idx].clone();
+            remove_readings(
+                readings,
+                predicate_idx,
+                tokens,
+                trace,
+                DisambiguationConstraint::SubjectPredicateAgreement,
+                subject_idx,
+                |analysis| {
+                    !is_predicate_reading(analysis)
+                        || !subject_readings.iter().any(|subject| {
+                            subject_predicate_pair_is_compatible(subject, analysis)
+                        })
+                },
+                |_| "reading is not compatible with the adjacent subject".to_owned(),
+            );
+        }
+        if predicate_reliable {
+            let predicate_readings = readings[predicate_idx].clone();
+            remove_readings(
+                readings,
+                subject_idx,
+                tokens,
+                trace,
+                DisambiguationConstraint::SubjectPredicateAgreement,
+                predicate_idx,
+                |analysis| {
+                    !is_subject_reading(analysis)
+                        || !predicate_readings.iter().any(|predicate| {
+                            subject_predicate_pair_is_compatible(analysis, predicate)
+                        })
+                },
+                |_| "reading is not compatible with the adjacent predicate".to_owned(),
+            );
+        }
+    }
+}
+
 /// Removes readings matching `should_remove`, never the last one, and records
 /// one `ReadingElimination` per removed reading.
 #[allow(clippy::too_many_arguments)]
@@ -231,6 +307,17 @@ fn adjacent_word_index(tokens: &[Token<'_>], from: usize) -> Option<usize> {
         .map(|(idx, _)| idx)
 }
 
+fn previous_adjacent_word_index(tokens: &[Token<'_>], from: usize) -> Option<usize> {
+    tokens
+        .iter()
+        .enumerate()
+        .take(from)
+        .rev()
+        .find(|(_, token)| token.kind != TokenKind::Whitespace)
+        .filter(|(_, token)| token.kind == TokenKind::Word)
+        .map(|(idx, _)| idx)
+}
+
 fn is_reliable_preposition(
     tokens: &[Token<'_>],
     readings: &[Vec<crate::morph::MorphAnalysis>],
@@ -268,4 +355,49 @@ fn is_reliable_noun(readings: &[crate::morph::MorphAnalysis]) -> bool {
             analysis.pos == crate::morph::PartOfSpeech::Noun
                 && analysis.agreement_signature().is_complete_for_adj_noun()
         })
+}
+
+fn is_subject_reading(analysis: &crate::morph::MorphAnalysis) -> bool {
+    matches!(
+        analysis.pos,
+        crate::morph::PartOfSpeech::Noun
+            | crate::morph::PartOfSpeech::Pronoun
+            | crate::morph::PartOfSpeech::Numeral
+    ) && !matches!(analysis.features.case, Some(case) if case != crate::morph::Case::Nominative)
+        && analysis.features.number.is_some()
+}
+
+fn is_predicate_reading(analysis: &crate::morph::MorphAnalysis) -> bool {
+    match analysis.pos {
+        crate::morph::PartOfSpeech::Verb => {
+            !matches!(analysis.features.verb_form, Some(crate::morph::VerbForm::Infinitive))
+                && analysis.features.number.is_some()
+        }
+        crate::morph::PartOfSpeech::Predicative => true,
+        crate::morph::PartOfSpeech::Adjective => {
+            matches!(
+                analysis.features.adjective_form,
+                Some(crate::morph::AdjectiveForm::Short)
+            ) && analysis.features.number.is_some()
+        }
+        _ => false,
+    }
+}
+
+fn is_reliable_subject(readings: &[crate::morph::MorphAnalysis]) -> bool {
+    !readings.is_empty() && readings.iter().all(is_subject_reading)
+}
+
+fn is_reliable_predicate(readings: &[crate::morph::MorphAnalysis]) -> bool {
+    !readings.is_empty() && readings.iter().all(is_predicate_reading)
+}
+
+fn subject_predicate_pair_is_compatible(
+    subject: &crate::morph::MorphAnalysis,
+    predicate: &crate::morph::MorphAnalysis,
+) -> bool {
+    is_subject_reading(subject)
+        && is_predicate_reading(predicate)
+        && crate::morph::subject_predicate_agreement_check(subject, predicate).compatibility
+            == crate::morph::MorphCompatibility::Compatible
 }

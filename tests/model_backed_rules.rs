@@ -90,9 +90,14 @@ fn quantity_rules_use_maximal_compound_numeral_frames() {
         .unwrap()
         .issues;
 
-    assert!(issues.iter().any(|i| {
-        i.rule_id == "ru.grammar.typed_compound_numeral_nominal_group_agreement_basic"
-    }));
+    let typed = issues
+        .iter()
+        .find(|i| i.rule_id == "ru.grammar.typed_compound_numeral_nominal_group_agreement_basic")
+        .expect("typed quantity issue");
+    assert_eq!(
+        typed.replacement.as_deref(),
+        Some("Сто двадцать два новых дома")
+    );
     assert!(
         !issues
             .iter()
@@ -125,6 +130,10 @@ fn verb_government_rule_uses_prepositional_valency_frames() {
         .collect::<Vec<_>>();
     assert_eq!(verb_government.len(), 1);
     assert!(verb_government[0].excerpt.contains("говорит о задачу"));
+    assert_eq!(
+        verb_government[0].replacement.as_deref(),
+        Some("говорит о задаче")
+    );
     let proof = verb_government[0].proof.as_ref().expect("government proof");
     assert_eq!(proof.kind, DiagnosticProofKind::GovernmentConflict);
     assert!(
@@ -166,6 +175,10 @@ fn verb_government_rule_handles_dative_direct_object_seed() {
         .collect::<Vec<_>>();
     assert_eq!(verb_government.len(), 1);
     assert!(verb_government[0].excerpt.contains("помогает проектом"));
+    assert_eq!(
+        verb_government[0].replacement.as_deref(),
+        Some("помогает проекту")
+    );
 }
 
 const VERB_GOVERNMENT_FIXTURE_MORPH: &str =

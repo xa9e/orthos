@@ -83,6 +83,7 @@ fn quantity_government_frame_detector(
         }
         let mut issue = mk_issue(rule, ctx, frame.span, message.to_owned(), None);
         issue.proof = Some(government_frame_proof(frame));
+        issue.replacement = government_frame_replacement(ctx, frame);
         out.push(issue);
     }
 

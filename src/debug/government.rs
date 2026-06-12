@@ -7,6 +7,10 @@ pub struct GovernmentFrameDebugEntry {
     pub span: Span,
     pub expected_cases: Vec<crate::morph::Case>,
     pub observed_cases: Vec<crate::morph::Case>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub expected_numbers: Vec<crate::morph::Number>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub observed_numbers: Vec<crate::morph::Number>,
     pub compatibility: crate::morph::MorphCompatibility,
     pub confidence: String,
     pub blockers: Vec<String>,
@@ -49,6 +53,8 @@ impl GovernmentFrameDebugEntry {
             span: frame.span,
             expected_cases: frame.expected_cases.clone(),
             observed_cases: frame.observed_cases.clone(),
+            expected_numbers: frame.expected_numbers.clone(),
+            observed_numbers: frame.observed_numbers.clone(),
             compatibility: frame.compatibility,
             confidence: format!("{:?}", frame.confidence),
             blockers: frame

@@ -15,6 +15,6 @@ use std::path::PathBuf;
 
 include!("cli/args.rs");
 include!("cli/run.rs");
-include!("cli/commands/rules.rs");
 include!("cli/io/output.rs");
 include!("cli/options.rs");
+include!("cli/commands/rules.rs");

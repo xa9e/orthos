@@ -105,6 +105,28 @@ impl MorphAnalyzer for MorphLexicon {
         bucket.clone()
     }
 
+    fn analyses_for_lemma(&self, lemma: &str) -> Vec<MorphAnalysis> {
+        let mut out = self
+            .entries
+            .values()
+            .flat_map(|analyses| analyses.iter())
+            .filter(|analysis| analysis.lemma == lemma)
+            .cloned()
+            .collect::<Vec<_>>();
+        out.sort_by(|left, right| {
+            left.form
+                .cmp(&right.form)
+                .then_with(|| left.pos.cmp(&right.pos))
+                .then_with(|| left.features.raw_tags.cmp(&right.features.raw_tags))
+        });
+        out.dedup_by(|left, right| {
+            left.form == right.form
+                && left.pos == right.pos
+                && left.features.raw_tags == right.features.raw_tags
+        });
+        out
+    }
+
     fn metadata(&self) -> Vec<DictionaryMetadata> {
         self.metadata.clone()
     }

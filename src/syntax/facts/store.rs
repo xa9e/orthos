@@ -71,14 +71,14 @@ impl<'a> LinguisticFactStore<'a> {
             &mut readings,
             &crate::morph::PrepositionGovernmentRegistry::russian_seed(),
         );
-        let analyses_for_token = |token_index: usize| readings[token_index].clone();
-
-        let ambiguity = AmbiguityModel::from_tokens_with_analyses(tokens, &analyses_for_token);
+        let ambiguity =
+            AmbiguityModel::from_tokens_with_analyses(tokens, |token_index| readings[token_index].clone());
         let islands = SyntacticIslandMap::from_text_tokens(text, tokens);
         let clause_boundaries = ClauseBoundaryMap::from_text_tokens(text, tokens);
         let nominal_groups = short_nominal_group_candidates(tokens, 3);
         let clauses = clause_candidates_from_islands(tokens, &ambiguity, &islands);
-        let morphosyntax = MorphosyntaxDocument::from_tokens_with_analyses(tokens, &analyses_for_token);
+        let morphosyntax =
+            MorphosyntaxDocument::from_tokens_with_analyses(tokens, |token_index| readings[token_index].clone());
         let agreement_graph = AgreementGraph::from_facts(
             &morphosyntax,
             &clauses,

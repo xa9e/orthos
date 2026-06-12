@@ -188,6 +188,7 @@ fn predicate_needs_gender(predicate: PredicateAgreementSignature) -> bool {
 
 fn can_be_subject(analysis: &MorphAnalysis) -> bool {
     matches!(analysis.pos, PartOfSpeech::Noun | PartOfSpeech::Pronoun | PartOfSpeech::Numeral)
+        && !matches!(analysis.features.case, Some(case) if case != Case::Nominative)
 }
 
 fn can_be_predicate(analysis: &MorphAnalysis) -> bool {

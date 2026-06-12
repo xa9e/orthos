@@ -1,6 +1,10 @@
 pub trait MorphAnalyzer: std::fmt::Debug + Send + Sync {
     fn analyze(&self, token: &str) -> Vec<MorphAnalysis>;
 
+    fn analyses_for_lemma(&self, _lemma: &str) -> Vec<MorphAnalysis> {
+        Vec::new()
+    }
+
     fn metadata(&self) -> Vec<DictionaryMetadata> {
         Vec::new()
     }

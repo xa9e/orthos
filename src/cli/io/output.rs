@@ -14,16 +14,28 @@ fn checker_from_corpus_and_morph(
     requested_forms: Option<&BTreeSet<String>>,
 ) -> Result<Checker> {
     let Some(path) = morph_lexicon else {
-        let default_cache = PathBuf::from("data/lexicon/opencorpora.bincache");
-        if default_cache.exists() {
-            let morph = load_morph_lexicon(default_cache.clone(), requested_forms)
-                .with_context(|| format!("failed to load default morph cache {}", default_cache.display()))?;
-            return Ok(Checker::with_morph_lexicon(corpus, morph));
-        }
-        return Ok(Checker::new(corpus));
+        let default_cache = std::path::Path::new("data/lexicon/opencorpora.bincache");
+        let morph = load_default_morph_lexicon(default_cache, requested_forms);
+        return Ok(Checker::with_morph_lexicon(corpus, morph));
     };
     let morph = load_morph_lexicon(path, requested_forms)?;
     Ok(Checker::with_morph_lexicon(corpus, morph))
+}
+
+fn load_default_morph_lexicon(
+    cache_path: &std::path::Path,
+    requested_forms: Option<&BTreeSet<String>>,
+) -> MorphLexicon {
+    if cache_path.exists() {
+        match load_morph_lexicon(cache_path.to_path_buf(), requested_forms) {
+            Ok(morph) => return morph,
+            Err(err) => eprintln!(
+                "warning: failed to load default morph cache {} ({err:#}); falling back to bundled demo lexicon",
+                cache_path.display()
+            ),
+        }
+    }
+    MorphLexicon::demo()
 }
 
 fn load_morph_lexicon(
@@ -135,5 +147,26 @@ fn print_human_issues(issues: &[orthos::Issue]) {
             println!("  source_refs: {}", issue.source_refs.join(", "));
         }
         println!("  excerpt: {}", issue.excerpt);
+    }
+}
+
+#[cfg(test)]
+mod cli_output_tests {
+    use super::*;
+
+    #[test]
+    fn invalid_default_cache_falls_back_to_demo_lexicon() {
+        let mut path = std::env::temp_dir();
+        path.push(format!(
+            "orthos-invalid-cache-{}-{}.bincache",
+            std::process::id(),
+            "fallback"
+        ));
+        fs::write(&path, b"bad").expect("invalid cache fixture is written");
+
+        let lexicon = load_default_morph_lexicon(&path, None);
+        let _ = fs::remove_file(&path);
+
+        assert!(!lexicon.analyze("девочка").is_empty());
     }
 }

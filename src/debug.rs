@@ -5,7 +5,7 @@ use crate::morph::MorphAnalysis;
 use crate::syntax::{GovernmentFrame, GovernmentFrameModelRef, LinguisticFactStore};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Default, Eq, PartialEq)]
 pub struct DebugOptions {
     pub enabled: bool,
     pub include_tokens: bool,
@@ -23,19 +23,6 @@ impl DebugOptions {
             include_morphology: true,
             include_fact_store: true,
             include_language_model: true,
-            limits: DebugLimits::default(),
-        }
-    }
-}
-
-impl Default for DebugOptions {
-    fn default() -> Self {
-        Self {
-            enabled: false,
-            include_tokens: false,
-            include_morphology: false,
-            include_fact_store: false,
-            include_language_model: false,
             limits: DebugLimits::default(),
         }
     }
@@ -108,14 +95,16 @@ impl AnalysisDebugSnapshot {
         summary_before: AnalysisContextSummary,
         options: &DebugOptions,
     ) -> Self {
-        let tokens = options
-            .include_tokens
-            .then(|| token_debug_entries(analysis, options))
-            .unwrap_or_default();
-        let morphology = options
-            .include_morphology
-            .then(|| morphology_debug_entries(analysis, options))
-            .unwrap_or_default();
+        let tokens = if options.include_tokens {
+            token_debug_entries(analysis, options)
+        } else {
+            Vec::new()
+        };
+        let morphology = if options.include_morphology {
+            morphology_debug_entries(analysis, options)
+        } else {
+            Vec::new()
+        };
         let fact_store = options
             .include_fact_store
             .then(|| FactStoreDebugSnapshot::from_store(analysis.fact_store(), options));
