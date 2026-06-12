@@ -87,7 +87,10 @@ fn corrected_dataset_targets_stay_silent_for_guarded_rules() {
         let fired = rule_ids_for(&checker, &record.correction);
         let guarded: Vec<String> = match &record.expectations.correction_silent_rules {
             Some(rules) => rules.clone(),
-            None => DEFAULT_GUARDED_RULES.iter().map(|s| s.to_string()).collect(),
+            None => DEFAULT_GUARDED_RULES
+                .iter()
+                .map(|s| s.to_string())
+                .collect(),
         };
         let violations = guarded
             .iter()

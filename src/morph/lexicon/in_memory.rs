@@ -57,7 +57,7 @@ impl MorphLexicon {
     pub fn attach_stress_records(&mut self, records: &[StressRecord]) -> usize {
         let mut attached = 0;
         for record in records {
-            let Some(analyses) = self.entries.get_mut(&record.form) else {
+            let Some(analyses) = self.entries.get_mut(&morph_lookup_key(&record.form)) else {
                 continue;
             };
             for analysis in analyses {
@@ -84,10 +84,25 @@ impl MorphLexicon {
 
 impl MorphAnalyzer for MorphLexicon {
     fn analyze(&self, token: &str) -> Vec<MorphAnalysis> {
-        self.entries
-            .get(&lower_ru(token))
-            .cloned()
-            .unwrap_or_default()
+        let Some(bucket) = self.entries.get(&morph_lookup_key(token)) else {
+            return Vec::new();
+        };
+        // Entries are bucketed under the ё-folded key, so a bucket can mix
+        // analyses for spellings that differ only in ё (колеса/колёса).
+        // An explicit ё in the token is trusted as a disambiguator; a token
+        // without ё keeps the whole bucket as genuine ambiguity.
+        let lowered = lower_ru(token);
+        if lowered.contains('ё') {
+            let exact = bucket
+                .iter()
+                .filter(|analysis| lower_ru(&analysis.form) == lowered)
+                .cloned()
+                .collect::<Vec<_>>();
+            if !exact.is_empty() {
+                return exact;
+            }
+        }
+        bucket.clone()
     }
 
     fn metadata(&self) -> Vec<DictionaryMetadata> {

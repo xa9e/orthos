@@ -1,7 +1,8 @@
 use std::io::{Read, Write};
 
-const CACHE_MAGIC: &[u8; 4] = b"RLM1";
-const CACHE_INDEX_MAGIC: &[u8; 4] = b"RLI2";
+// Bumped whenever the on-disk key space changes; RLM2 keys are ё-folded.
+const CACHE_MAGIC: &[u8; 4] = b"RLM2";
+const CACHE_INDEX_MAGIC: &[u8; 4] = b"RLI3";
 const CACHE_IO_BUFFER_BYTES: usize = 8 * 1024 * 1024;
 
 impl MorphLexicon {
@@ -31,7 +32,7 @@ impl MorphLexicon {
         forms: &BTreeSet<String>,
     ) -> anyhow::Result<Self> {
         let path = path.as_ref();
-        let normalized_forms = forms.iter().map(|form| lower_ru(form)).collect::<BTreeSet<_>>();
+        let normalized_forms = forms.iter().map(|form| morph_lookup_key(form)).collect::<BTreeSet<_>>();
         if let Ok(Some(indexed)) = read_compact_cache_indexed(path, &normalized_forms) {
             return Ok(indexed);
         }

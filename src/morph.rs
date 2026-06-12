@@ -1,4 +1,4 @@
-use crate::text::{lower_ru, uppercase_first};
+use crate::text::{lower_ru, morph_lookup_key, uppercase_first};
 use std::collections::{BTreeSet, HashMap};
 use std::fmt;
 use std::fs;

@@ -36,7 +36,7 @@ fn compact_cache_can_load_requested_forms_only() {
     let index_magic = fs::read(&index_path).expect("index reads");
 
     assert!(index_path.exists());
-    assert_eq!(&index_magic[..4], b"RLI2");
+    assert_eq!(&index_magic[..4], b"RLI3");
     assert_eq!(filtered.len(), 1);
     assert_eq!(filtered_again.len(), 1);
     assert_eq!(filtered.analyze("дом").len(), 1);

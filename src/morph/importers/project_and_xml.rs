@@ -52,7 +52,7 @@ fn parse_project_tsv(
             source_id,
         )
         .with_stress(stress);
-        entries.entry(form).or_default().push(analysis);
+        entries.entry(morph_lookup_key(&form)).or_default().push(analysis);
     }
 
     metadata.has_stress |= has_stress;
@@ -83,7 +83,7 @@ fn build_lexicon_from_analyses(
 
     for analysis in analyses {
         has_stress |= analysis.stress.availability == StressAvailability::Available;
-        entries.entry(lower_ru(&analysis.form)).or_default().push(analysis);
+        entries.entry(morph_lookup_key(&analysis.form)).or_default().push(analysis);
     }
 
     metadata.has_stress |= has_stress;

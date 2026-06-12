@@ -151,6 +151,17 @@ pub fn lower_ru(s: &str) -> String {
     s.chars().flat_map(char::to_lowercase).collect::<String>()
 }
 
+/// Folds `ё` to `е`. Russian text routinely omits `ё`, so dictionary lookup
+/// must treat the two spellings as one key space.
+pub fn fold_yo(s: &str) -> String {
+    s.replace('ё', "е")
+}
+
+/// Canonical lexicon lookup key: lowercased with `ё` folded to `е`.
+pub fn morph_lookup_key(s: &str) -> String {
+    fold_yo(&lower_ru(s))
+}
+
 pub fn normalize_word(word: &str) -> String {
     word.chars()
         .filter(|ch| ch.is_alphabetic() || *ch == '-')

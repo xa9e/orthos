@@ -103,6 +103,39 @@ mod tests {
     }
 
     #[test]
+    fn yo_less_token_finds_yo_spelled_dictionary_forms() {
+        let lexicon = MorphLexicon::parse_tsv(
+            "колёса\tколесо\tNOUN\tgender=neut|number=plur|case=nom\n\
+             колеса\tколесо\tNOUN\tgender=neut|number=sing|case=gen\n",
+        );
+        let analyses = lexicon.analyze("Колеса");
+        assert_eq!(analyses.len(), 2, "е-spelled token keeps both ё-variants as ambiguity");
+        assert!(analyses.iter().any(|a| a.features.number == Some(Number::Plural)));
+        assert!(analyses.iter().any(|a| a.features.number == Some(Number::Singular)));
+    }
+
+    #[test]
+    fn explicit_yo_token_disambiguates_within_folded_bucket() {
+        let lexicon = MorphLexicon::parse_tsv(
+            "колёса\tколесо\tNOUN\tgender=neut|number=plur|case=nom\n\
+             колеса\tколесо\tNOUN\tgender=neut|number=sing|case=gen\n",
+        );
+        let analyses = lexicon.analyze("колёса");
+        assert_eq!(analyses.len(), 1);
+        assert_eq!(analyses[0].features.number, Some(Number::Plural));
+    }
+
+    #[test]
+    fn yo_token_without_exact_entry_falls_back_to_folded_bucket() {
+        let lexicon = MorphLexicon::parse_tsv(
+            "все\tвесь\tADJ\tnumber=plur|case=nom|adj_form=full\n",
+        );
+        let analyses = lexicon.analyze("всё");
+        assert_eq!(analyses.len(), 1, "ё token still reaches е-spelled dictionary entry");
+        assert_eq!(analyses[0].lemma, "весь");
+    }
+
+    #[test]
     fn negation_spacing_model_uses_verbal_analyses_conservatively() {
         let lexicon = MorphLexicon::parse_tsv(
             "знаю\tзнать\tVERB\tnumber=sing|person=1|tense=pres|verb_form=finite\n\
