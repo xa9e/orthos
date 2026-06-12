@@ -70,6 +70,9 @@ pub enum Detector {
     CoordinationCommaBasic {
         message: String,
     },
+    PhraseologicalCoordinationComma {
+        message: String,
+    },
     UnbalancedQuotes {
         message: String,
     },
@@ -184,6 +187,7 @@ impl Detector {
             Self::MissingCommaBeforeSubordinator { .. } => "missing_comma_before_subordinator",
             Self::IntroductoryPhraseComma { .. } => "introductory_phrase_comma",
             Self::CoordinationCommaBasic { .. } => "coordination_comma_basic",
+            Self::PhraseologicalCoordinationComma { .. } => "phraseological_coordination_comma",
             Self::UnbalancedQuotes { .. } => "unbalanced_quotes",
             Self::UnpairedDelimiters { .. } => "unpaired_delimiters",
             Self::MixedAlphabetWord { .. } => "mixed_alphabet_word",

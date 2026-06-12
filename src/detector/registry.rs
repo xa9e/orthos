@@ -129,6 +129,7 @@ impl Default for DetectorRegistry {
         registry.register(MissingCommaBeforeSubordinatorRunner);
         registry.register(IntroductoryPhraseCommaRunner);
         registry.register(CoordinationCommaBasicRunner);
+        registry.register(PhraseologicalCoordinationCommaRunner);
         registry.register(DocumentAbbreviationExpansionRunner);
         registry.register(DocumentStyleConsistencyRunner);
         registry.register(UnbalancedQuotesRunner);

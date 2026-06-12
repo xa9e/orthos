@@ -6,7 +6,8 @@
 
 use crate::issue::Span;
 use crate::text::{
-    Token, TokenKind, is_sentence_boundary, lower_ru, next_non_ws, previous_non_ws, tokenize,
+    Token, TokenKind, is_sentence_boundary, lower_ru, morph_lookup_key, next_non_ws,
+    previous_non_ws, tokenize,
 };
 use std::collections::{BTreeSet, HashSet};
 
@@ -28,6 +29,7 @@ include!("syntax/agreement_graph/model.rs");
 include!("syntax/coordination/model.rs");
 include!("syntax/coordination/inference.rs");
 include!("syntax/coordination/builders.rs");
+include!("syntax/coordination/phraseology.rs");
 include!("syntax/punctuation/slot_model.rs");
 include!("syntax/punctuation/slot_evidence.rs");
 include!("syntax/punctuation/coordination_slots.rs");

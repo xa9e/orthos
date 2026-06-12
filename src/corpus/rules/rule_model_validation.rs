@@ -208,6 +208,7 @@ impl Rule {
             | Detector::NumberUnitSpacing { .. }
             | Detector::IntroductoryPhraseComma { .. }
             | Detector::CoordinationCommaBasic { .. }
+            | Detector::PhraseologicalCoordinationComma { .. }
             | Detector::MissingCommaBeforeSubordinator { .. }
             | Detector::MixedAlphabetWord { .. }
             | Detector::ZhiShiChaShcha { .. } => vec![Capability::Tokenization],
@@ -260,6 +261,7 @@ impl Rule {
             | Detector::MissingCommaBeforeSubordinator { message, .. }
             | Detector::IntroductoryPhraseComma { message, .. }
             | Detector::CoordinationCommaBasic { message }
+            | Detector::PhraseologicalCoordinationComma { message }
             | Detector::UnbalancedQuotes { message }
             | Detector::UnpairedDelimiters { message, .. }
             | Detector::MixedAlphabetWord { message }

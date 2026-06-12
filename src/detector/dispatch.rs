@@ -114,6 +114,16 @@ detector_runner!(
 
 
 detector_runner!(
+    PhraseologicalCoordinationCommaRunner,
+    "phraseological_coordination_comma",
+    [Capability::Tokenization],
+    "Inventory-backed detector for commas inside phraseological repeated-conjunction pairs.",
+    |rule, ctx| Detector::PhraseologicalCoordinationComma { message } => {
+        phraseological_coordination_comma_detector(rule, ctx, message)
+    }
+);
+
+detector_runner!(
     CoordinationCommaBasicRunner,
     "coordination_comma_basic",
     [Capability::Tokenization, Capability::Syntax],

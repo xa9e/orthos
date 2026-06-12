@@ -114,6 +114,35 @@ rules:
   - coordination
   - punctuation-slot
   - strict-only
+- id: ru.punctuation.comma_inside_phraseological_pair
+  title: Запятая не ставится внутри цельных фразеологических сочетаний с повторяющимися союзами
+  domain: punctuation
+  level: school
+  status: implemented
+  severity: warning
+  source_refs:
+  - gramota_lopatin_full
+  - gramota_punctuation
+  detector:
+    kind: phraseological_coordination_comma
+    message: Внутри устойчивого сочетания с повторяющимся союзом запятая не ставится.
+  examples:
+    valid:
+    - Они работали и день и ночь.
+    - От него не было ни слуху ни духу.
+    - Вася попробовал и так и эдак.
+    invalid:
+    - Они работали и день, и ночь.
+    - От него не было ни слуху, ни духу.
+    - Вася попробовал и так, и эдак.
+  requires:
+  - tokenization
+  - syntax
+  confidence: medium
+  false_positive_risk: low
+  tags:
+  - coordination
+  - phraseology
 - id: ru.punctuation.introductory_words
   title: Вводные слова и сочетания обычно обособляются
   domain: punctuation

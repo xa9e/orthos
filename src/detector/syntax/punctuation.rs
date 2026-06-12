@@ -167,6 +167,25 @@ fn unpaired_delimiters_detector(rule: &Rule, ctx: &DetectorContext<'_>, pairs: &
 }
 
 
+fn phraseological_coordination_comma_detector(
+    rule: &Rule,
+    ctx: &DetectorContext<'_>,
+    message: &str,
+) -> Result<Vec<Issue>> {
+    Ok(crate::syntax::phraseological_pair_commas(ctx.tokens())
+        .into_iter()
+        .map(|hit| {
+            mk_issue(
+                rule,
+                ctx,
+                hit.comma_span,
+                message.to_owned(),
+                Some(String::new()),
+            )
+        })
+        .collect())
+}
+
 fn coordination_comma_basic_detector(
     rule: &Rule,
     ctx: &DetectorContext<'_>,
