@@ -26,7 +26,8 @@ The snapshot contains:
 
 - `analysis.summary_before` and `analysis.summary_after`;
 - optional token and morphology dumps;
-- `fact_store.summary`;
+- `fact_store.summary` (including `eliminated_readings`);
+- `fact_store.disambiguation` with one proof per eliminated morphological reading;
 - `fact_store.clause_boundaries` with marker/kind/confidence spans;
 - government frames with governor/dependent/cases/confidence/blockers/conflict status;
 - verb-government frame `model_ref` when a frame was produced from the language model;
