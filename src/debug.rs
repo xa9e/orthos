@@ -148,6 +148,8 @@ pub struct TokenMorphDebugEntry {
 pub struct FactStoreDebugSnapshot {
     pub summary: crate::syntax::LinguisticFactStoreSummary,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub disambiguation: Vec<crate::syntax::ReadingElimination>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub clause_boundaries: Vec<ClauseBoundaryDebugEntry>,
     pub government_frames: Vec<GovernmentFrameDebugEntry>,
 }
@@ -156,6 +158,13 @@ impl FactStoreDebugSnapshot {
     fn from_store(store: &LinguisticFactStore<'_>, options: &DebugOptions) -> Self {
         Self {
             summary: store.summary(),
+            disambiguation: store
+                .disambiguation()
+                .eliminations
+                .iter()
+                .take(options.limits.max_fact_items)
+                .cloned()
+                .collect(),
             clause_boundaries: store
                 .clause_boundaries()
                 .boundaries()

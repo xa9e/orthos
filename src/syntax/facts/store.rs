@@ -6,6 +6,8 @@ pub struct LinguisticFactStoreSummary {
     pub nominal_groups: usize,
     #[serde(default)]
     pub clause_boundaries: usize,
+    #[serde(default)]
+    pub eliminated_readings: usize,
     pub clauses: usize,
     pub agreement_edges: usize,
     pub coordination_groups: usize,
@@ -21,6 +23,7 @@ pub struct LinguisticFactStoreSummary {
 
 pub struct LinguisticFactStore<'a> {
     tokens: Vec<Token<'a>>,
+    disambiguation: DisambiguationTrace,
     ambiguity: AmbiguityModel<'a>,
     islands: SyntacticIslandMap,
     clause_boundaries: ClauseBoundaryMap,
@@ -52,6 +55,24 @@ impl<'a> LinguisticFactStore<'a> {
         tokens: &[Token<'a>],
         analyses_for_token: impl Fn(usize) -> Vec<crate::morph::MorphAnalysis>,
     ) -> Self {
+        // Contextual disambiguation runs first: every downstream fact layer
+        // sees the reduced reading sets, and the trace keeps the proofs.
+        let mut readings = (0..tokens.len())
+            .map(|token_index| {
+                if matches!(tokens[token_index].kind, TokenKind::Word | TokenKind::Number) {
+                    analyses_for_token(token_index)
+                } else {
+                    Vec::new()
+                }
+            })
+            .collect::<Vec<_>>();
+        let disambiguation = disambiguate_readings(
+            tokens,
+            &mut readings,
+            &crate::morph::PrepositionGovernmentRegistry::russian_seed(),
+        );
+        let analyses_for_token = |token_index: usize| readings[token_index].clone();
+
         let ambiguity = AmbiguityModel::from_tokens_with_analyses(tokens, &analyses_for_token);
         let islands = SyntacticIslandMap::from_text_tokens(text, tokens);
         let clause_boundaries = ClauseBoundaryMap::from_text_tokens(text, tokens);
@@ -90,6 +111,7 @@ impl<'a> LinguisticFactStore<'a> {
 
         Self {
             tokens: tokens.to_vec(),
+            disambiguation,
             ambiguity,
             islands,
             clause_boundaries,
@@ -113,6 +135,10 @@ impl<'a> LinguisticFactStore<'a> {
 
     pub fn tokens(&self) -> &[Token<'a>] {
         &self.tokens
+    }
+
+    pub fn disambiguation(&self) -> &DisambiguationTrace {
+        &self.disambiguation
     }
 
     pub fn ambiguity(&self) -> &AmbiguityModel<'a> {
@@ -178,6 +204,7 @@ impl<'a> LinguisticFactStore<'a> {
                 .count(),
             islands: self.islands.islands().len(),
             clause_boundaries: self.clause_boundaries.boundaries().len(),
+            eliminated_readings: self.disambiguation.eliminations.len(),
             nominal_groups: self.nominal_groups.len(),
             clauses: self.clauses.len(),
             agreement_edges: self.agreement_graph.edges().len(),
