@@ -197,8 +197,8 @@ After that, `orthos` automatically uses `data/lexicon/opencorpora.bincache`
 when no `--morph-lexicon` is passed.
 
 The cache is derived from the OpenCorpora morphological dictionary. OpenCorpora
-data is distributed under CC BY-SA 3.0; the project code remains All Rights
-Reserved.
+data is distributed under CC BY-SA 3.0; the project code is licensed under
+AGPL-3.0-or-later.
 
 ## Test
 
@@ -248,16 +248,15 @@ Useful docs:
 - `docs/DATASETS.md`
 - `docs/CLI_USAGE.md`
 - `docs/ARCHITECTURE.md`
-- `docs/dev/local-verification.md`
 - `docs/language-model/`
 - `docs/debug-layer.md`
 
 ## License
 
-All rights reserved for now. The repository is public for viewing and
-evaluation, but no reuse, redistribution, sublicensing, or hosting permission is
-granted unless the copyright holder gives it explicitly in writing. See
-`LICENSE`.
+The project is licensed under the GNU Affero General Public License,
+version 3 or any later version (AGPL-3.0-or-later). See `LICENSE` for the full
+text. External datasets keep their own licenses and are never vendored into
+this repository; see `docs/DATASETS.md`.
 
 ## Git Bundle Workflow
 

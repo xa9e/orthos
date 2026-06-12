@@ -3,7 +3,7 @@ name = "orthos"
 version = "0.1.0"
 edition = "2024"
 description = "Rule-based Russian spelling, punctuation and grammar checker prototype"
-license-file = "LICENSE"
+license = "AGPL-3.0-or-later"
 rust-version = "1.91"
 
 [lib]
