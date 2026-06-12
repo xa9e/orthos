@@ -29,3 +29,7 @@
 скидок	скидка	NOUN	gender=fem|number=plur|case=gen|animacy=inan
 новому	новый	ADJ	gender=masc|number=sing|case=dat|adj_form=full
 приказа	приказ	NOUN	gender=masc|number=sing|case=gen|animacy=inan
+# е/ё homography: text without ё must keep both readings as ambiguity.
+колеса	колесо	NOUN	gender=neut|number=sing|case=gen|animacy=inan
+колёса	колесо	NOUN	gender=neut|number=plur|case=nom|animacy=inan
+стучали	стучать	VERB	number=plur|tense=past|verb_form=finite
