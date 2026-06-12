@@ -35,6 +35,24 @@ Rule code should depend on:
 
 The current concrete analyzer is `MorphLexicon`, an in-memory lexicon. It is still tiny and exists to make detector contracts testable. It is not a production Russian morphology dictionary.
 
+## ё/е lookup folding
+
+Russian text routinely drops `ё`, so `MorphLexicon` buckets entries under a
+ё-folded lowercase key (`колеса` and `колёса` share one bucket).
+
+Lookup policy:
+
+- a token written without `ё` returns the whole bucket — both spellings are a
+  genuine ambiguity and conservative rules must treat them as such;
+- a token with an explicit `ё` is trusted as a disambiguator: if the bucket
+  contains exact-spelling analyses, only those are returned;
+- a `ё` token with no exact entry still falls back to the folded bucket.
+
+This removes a classic false-positive class (е-spelled plural subjects such as
+«Колеса стучали» being analyzed only as genitive singular) without losing the
+precision that explicit `ё` provides. Binary lexicon caches are keyed the same
+way; the cache magic was bumped (`RLM2`/`RLI3`) so stale caches regenerate.
+
 ## Analyzer capabilities
 
 `AnalyzerCapabilities` documents what the analyzer can safely provide:

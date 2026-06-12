@@ -162,6 +162,25 @@ The benchmark reports:
 
 The precision/recall/F0.5 fields are proxies, not exact GEC metrics. The label-domain hit rate is intentionally coarse: it maps labels to domains such as `orthography`, `punctuation`, `grammar`, and `style`, then checks whether any fired rule belongs to the same broad domain. See `docs/evaluation-methodology.md` for the ugly caveats before using these numbers in public quality claims.
 
+## Dataset regression fixtures
+
+Curated dataset records live in `testdata/fixtures/eval/gec_dataset_regressions.jsonl`
+and are executed by `tests/dataset_regressions.rs` (`cargo test --test dataset_regressions`).
+Each record keeps the benchmark JSONL schema (`input`, `correction`, `targets`,
+`edits`, `labels`) and adds an `expectations` object:
+
+- `correction_silent_rules` — rules that must not fire on the corrected target
+  (overrides the default guarded set; precision side);
+- `input_must_trigger` — rules that must fire on the erroneous input
+  (recall claims);
+- `input_must_not_trigger` — rules that must stay silent even on the erroneous
+  input.
+
+Token morphology for these records is curated next to them in
+`testdata/fixtures/eval/dataset_regressions_morph.tsv`. Adding a record means
+adding its morphology in the same change, so a regression stays reproducible
+without external dictionaries.
+
 ## Smoke tests
 
 Importer and benchmark smoke tests use only tiny local fixtures:
