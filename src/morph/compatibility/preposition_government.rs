@@ -50,12 +50,68 @@ impl PrepositionGovernmentRegistry {
         registry.insert_many("согласно", [Case::Dative], "normative dative");
         registry.insert_many("благодаря", [Case::Dative], "causal dative");
         registry.insert_many("вопреки", [Case::Dative], "concessive dative");
-        registry.insert_many("о", [Case::Prepositional], "topic prepositional");
-        registry.insert_many("об", [Case::Prepositional], "topic prepositional");
+        registry.insert_many(
+            "о",
+            [Case::Prepositional, Case::Accusative],
+            "topic prepositional; collision accusative (о стену)",
+        );
+        registry.insert_many(
+            "об",
+            [Case::Prepositional, Case::Accusative],
+            "topic prepositional; collision accusative (об стену)",
+        );
         registry.insert_many("при", [Case::Prepositional], "circumstantial prepositional");
         registry.insert_many("между", [Case::Instrumental], "between instrumental");
         registry.insert_many("над", [Case::Instrumental], "above instrumental");
-        registry.insert_many("под", [Case::Instrumental], "under instrumental seed");
+        registry.insert_many(
+            "под",
+            [Case::Instrumental, Case::Accusative],
+            "location instrumental; direction accusative (под стол)",
+        );
+        registry.insert_many(
+            "в",
+            [Case::Prepositional, Case::Accusative],
+            "location prepositional; direction accusative",
+        );
+        registry.insert_many(
+            "во",
+            [Case::Prepositional, Case::Accusative],
+            "location prepositional; direction accusative",
+        );
+        registry.insert_many(
+            "на",
+            [Case::Prepositional, Case::Accusative],
+            "location prepositional; direction accusative",
+        );
+        registry.insert_many(
+            "с",
+            [Case::Genitive, Case::Accusative, Case::Instrumental],
+            "source genitive; comitative instrumental; measure accusative",
+        );
+        registry.insert_many(
+            "со",
+            [Case::Genitive, Case::Accusative, Case::Instrumental],
+            "source genitive; comitative instrumental; measure accusative",
+        );
+        registry.insert_many(
+            "по",
+            [Case::Dative, Case::Accusative, Case::Prepositional],
+            "distributive dative; limit accusative; temporal prepositional (по прибытии)",
+        );
+        registry.insert_many(
+            "за",
+            [Case::Accusative, Case::Instrumental],
+            "direction accusative; location instrumental",
+        );
+        registry.insert_many("перед", [Case::Instrumental], "anterior instrumental");
+        registry.insert_many("через", [Case::Accusative], "path accusative");
+        registry.insert_many("про", [Case::Accusative], "topic accusative");
+        registry.insert_many("ради", [Case::Genitive], "purpose genitive");
+        registry.insert_many("кроме", [Case::Genitive], "exception genitive");
+        registry.insert_many("среди", [Case::Genitive], "among genitive");
+        registry.insert_many("возле", [Case::Genitive], "near genitive");
+        registry.insert_many("из-за", [Case::Genitive], "causal/source genitive");
+        registry.insert_many("из-под", [Case::Genitive], "source genitive");
         registry
     }
 

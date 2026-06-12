@@ -108,14 +108,16 @@ fn debug_report_records_raw_suppressed_and_emitted_rule_counts() {
     assert_eq!(rule.raw_issue_count, 1);
     assert_eq!(rule.suppressed_issue_count, 1);
     assert_eq!(rule.emitted_issue_count, 0);
+    // «о задачу» is not a preposition-level case violation («о стену» is valid
+    // accusative government), so only the verb-level rule reports it.
     let preposition_rule = debug
         .engine
         .rule_outputs
         .iter()
         .find(|item| item.rule_id == "ru.grammar.preposition_government_basic")
         .expect("preposition government rule output");
-    assert_eq!(preposition_rule.raw_issue_count, 1);
-    assert_eq!(preposition_rule.suppressed_issue_count, 1);
+    assert_eq!(preposition_rule.raw_issue_count, 0);
+    assert_eq!(preposition_rule.suppressed_issue_count, 0);
     assert_eq!(preposition_rule.emitted_issue_count, 0);
     assert!(result.issues.is_empty());
 }
