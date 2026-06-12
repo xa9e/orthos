@@ -1,18 +1,58 @@
+//! Dataset-backed regression contract.
+//!
+//! Every record in `testdata/fixtures/eval/gec_dataset_regressions.jsonl` is a
+//! curated example from a real GEC dataset and carries explicit expectations:
+//!
+//! - the corrected target must stay silent for the guarded model-backed rules
+//!   (precision side);
+//! - the erroneous input must trigger the listed rules, when the engine claims
+//!   to detect that error class (recall side).
+//!
+//! Token morphology for these records lives in
+//! `testdata/fixtures/eval/dataset_regressions_morph.tsv` so that curating a
+//! record and curating its morphology stay one reviewable unit.
+
 use orthos::{CheckOptions, Checker, Corpus, MorphLexicon, Profile};
 use pretty_assertions::assert_eq;
 use serde::Deserialize;
+use std::collections::BTreeSet;
 use std::path::PathBuf;
+
+/// Rules guarded against false positives on every corrected target unless a
+/// record overrides the set via `expectations.correction_silent_rules`.
+const DEFAULT_GUARDED_RULES: &[&str] = &[
+    "ru.grammar.adj_noun_agreement_demo",
+    "ru.grammar.nominal_group_modifier_agreement_basic",
+    "ru.grammar.preposition_nominal_group_government_basic",
+];
 
 #[derive(Debug, Deserialize)]
 struct DatasetRegression {
     id: String,
+    input: String,
     correction: String,
+    #[serde(default)]
+    expectations: Expectations,
+}
+
+#[derive(Debug, Default, Deserialize)]
+struct Expectations {
+    /// Overrides the default guarded rule set for the corrected target.
+    #[serde(default)]
+    correction_silent_rules: Option<Vec<String>>,
+    /// Rules that must fire on the erroneous input (recall claims).
+    #[serde(default)]
+    input_must_trigger: Vec<String>,
+    /// Rules that must stay silent even on the erroneous input.
+    #[serde(default)]
+    input_must_not_trigger: Vec<String>,
 }
 
 fn checker() -> Checker {
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     let corpus = Corpus::load_dir(root.join("rules")).expect("corpus loads");
-    Checker::with_morph_lexicon(corpus, MorphLexicon::parse_tsv(fixture_morphology()))
+    let morphology = include_str!("../testdata/fixtures/eval/dataset_regressions_morph.tsv");
+    Checker::with_morph_lexicon(corpus, MorphLexicon::parse_tsv(morphology))
 }
 
 fn strict_options() -> CheckOptions {
@@ -24,29 +64,83 @@ fn strict_options() -> CheckOptions {
 fn load_regressions() -> Vec<DatasetRegression> {
     include_str!("../testdata/fixtures/eval/gec_dataset_regressions.jsonl")
         .lines()
+        .filter(|line| !line.trim().is_empty())
         .map(|line| serde_json::from_str(line).expect("dataset regression fixture record parses"))
         .collect()
 }
 
+fn rule_ids_for(checker: &Checker, text: &str) -> BTreeSet<String> {
+    checker
+        .check_with_options(text, &strict_options())
+        .unwrap()
+        .issues
+        .into_iter()
+        .map(|issue| issue.rule_id)
+        .collect()
+}
+
 #[test]
-fn corrected_dataset_fixture_targets_do_not_trigger_model_backed_false_positives() {
+fn corrected_dataset_targets_stay_silent_for_guarded_rules() {
     let checker = checker();
-    let guarded_rules = [
-        "ru.grammar.adj_noun_agreement_demo",
-        "ru.grammar.nominal_group_modifier_agreement_basic",
-        "ru.grammar.preposition_nominal_group_government_basic",
-    ];
 
     for record in load_regressions() {
-        let issues = checker
-            .check_with_options(&record.correction, &strict_options())
-            .unwrap()
-            .issues
-            .into_iter()
-            .filter(|issue| guarded_rules.contains(&issue.rule_id.as_str()))
-            .map(|issue| issue.rule_id)
+        let fired = rule_ids_for(&checker, &record.correction);
+        let guarded: Vec<String> = match &record.expectations.correction_silent_rules {
+            Some(rules) => rules.clone(),
+            None => DEFAULT_GUARDED_RULES.iter().map(|s| s.to_string()).collect(),
+        };
+        let violations = guarded
+            .iter()
+            .filter(|rule| fired.contains(*rule))
+            .cloned()
             .collect::<Vec<_>>();
-        assert_eq!(issues, Vec::<String>::new(), "{}", record.id);
+        assert_eq!(
+            violations,
+            Vec::<String>::new(),
+            "{}: corrected target must stay silent",
+            record.id
+        );
+    }
+}
+
+#[test]
+fn erroneous_dataset_inputs_trigger_claimed_rules() {
+    let checker = checker();
+
+    for record in load_regressions() {
+        if record.expectations.input_must_trigger.is_empty()
+            && record.expectations.input_must_not_trigger.is_empty()
+        {
+            continue;
+        }
+        let fired = rule_ids_for(&checker, &record.input);
+        let missing = record
+            .expectations
+            .input_must_trigger
+            .iter()
+            .filter(|rule| !fired.contains(*rule))
+            .cloned()
+            .collect::<Vec<_>>();
+        assert_eq!(
+            missing,
+            Vec::<String>::new(),
+            "{}: claimed rules must fire on erroneous input (fired: {:?})",
+            record.id,
+            fired
+        );
+        let unexpected = record
+            .expectations
+            .input_must_not_trigger
+            .iter()
+            .filter(|rule| fired.contains(*rule))
+            .cloned()
+            .collect::<Vec<_>>();
+        assert_eq!(
+            unexpected,
+            Vec::<String>::new(),
+            "{}: rules listed as silent fired on erroneous input",
+            record.id
+        );
     }
 }
 
@@ -65,34 +159,4 @@ fn governed_nominal_group_regression_still_catches_bad_head_case() {
             issue.rule_id == "ru.grammar.preposition_nominal_group_government_basic"
         })
     );
-}
-
-fn fixture_morphology() -> &'static str {
-    "так\tтак\tADV\t\n\
-     эдак\tэдак\tADV\t\n\
-     у\tу\tPREP\t\n\
-     него\tон\tPRON\tgender=masc|number=sing|case=gen\n\
-     все\tвесь\tADJ\tnumber=plur|case=nom|adj_form=full\n\
-     от\tот\tPREP\t\n\
-     целый\tцелый\tADJ\tgender=masc|number=sing|case=nom|adj_form=full\n\
-     год\tгод\tNOUN\tgender=masc|number=sing|case=nom|animacy=inan\n\
-     слуху\tслух\tNOUN\tgender=masc|number=sing|case=dat|animacy=inan\n\
-     духу\tдух\tNOUN\tgender=masc|number=sing|case=dat|animacy=inan\n\
-     к\tк\tPREP\t\n\
-     потере\tпотеря\tNOUN\tgender=fem|number=sing|case=dat|animacy=inan\n\
-     слуха\tслух\tNOUN\tgender=masc|number=sing|case=gen|animacy=inan\n\
-     зрения\tзрение\tNOUN\tgender=neut|number=sing|case=gen|animacy=inan\n\
-     один\tодин\tNUMR\tgender=masc|number=sing|case=nom\n\
-     из\tиз\tPREP\t\n\
-     летних\tлетний\tADJ\tnumber=plur|case=gen|adj_form=full\n\
-     вечеров\tвечер\tNOUN\tgender=masc|number=plur|case=gen|animacy=inan\n\
-     прозвучал\tпрозвучать\tVERB\tgender=masc|number=sing|tense=past|verb_form=finite\n\
-     тревожный\tтревожный\tADJ\tgender=masc|number=sing|case=nom|adj_form=full\n\
-     звонок\tзвонок\tNOUN\tgender=masc|number=sing|case=nom|animacy=inan\n\
-     сайтов\tсайт\tNOUN\tgender=masc|number=plur|case=gen|animacy=inan\n\
-     авиакомпаний\tавиакомпания\tNOUN\tgender=fem|number=plur|case=gen|animacy=inan\n\
-     поисках\tпоиск\tNOUN\tgender=masc|number=plur|case=prep|animacy=inan\n\
-     скидок\tскидка\tNOUN\tgender=fem|number=plur|case=gen|animacy=inan\n\
-     новому\tновый\tADJ\tgender=masc|number=sing|case=dat|adj_form=full\n\
-     приказа\tприказ\tNOUN\tgender=masc|number=sing|case=gen|animacy=inan\n"
 }
