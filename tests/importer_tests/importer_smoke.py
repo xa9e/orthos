@@ -266,6 +266,6 @@ class ImporterSmokeTests(unittest.TestCase):
                 str(report),
             )
             payload = json.loads(report.read_text(encoding="utf-8"))
-        self.assertEqual(payload["examples"], 4)
+        self.assertEqual(payload["examples"], 5)
         self.assertEqual(payload["source_diagnostics"], 0)
         self.assertEqual(payload["target_diagnostics"], 0)
